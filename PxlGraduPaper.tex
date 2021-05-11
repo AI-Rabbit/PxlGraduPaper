@@ -83,9 +83,40 @@
 
 \subsection{引言}
 
-作为新一代移动通信技术，5G以其大带宽、低时延、大连接等特性，将为物联网、社交娱乐、智慧交通、工业互联网等技术发展注入新的活力，助力我国数字经济发展。
-目前，增强移动宽带（eMBB）、高可靠低时延（uRLLC）和海量机器类通信（mMTC）成为5G的三大应用场景。
-但现阶段5G应用还存在覆盖差、成本高、能耗高等痛点。例如室外5G信号盲区、室内Wi-Fi信号穿墙效果差等问题，只能通过增加无线基站和无线路由器数量来解决，不仅增加成本，还加大管理难度。
+作为最新一代蜂窝移动通信技术，第五代移动通信技术（5G）以其大带宽、低时延、大连接等特性，将为物联网、社交娱乐、智慧交通、工业互联网等技术发展注入新的活力，助力我国数字经济发展。
+目前，增强移动宽带（eMBB）、高可靠低时延（uRLLC）和海量机器类通信（mMTC）成为5G的三大应用场景。进一步细分，在3D超高清视频、云工作/娱乐、AR/VR、工业自动化、关键任务应用、自动驾驶、ITU-R WP5D、智慧城市和智能家居/建筑等方方面面都有长足的应用。
+这是因为5G有着多项关键技术，其中举足轻重的就是毫米波（Millimeter Wave）技术和大规模多入多出（Massive MIMO）技术；前者可以增加带宽资源，提供更低的时延，并且天线尺寸更小，可以使设备轻量化，从而部署更为便捷，后者可以提高频谱效率。5G毫米波技术频率资源丰富、带宽大、峰值速率极高，有时延低和容量大的优点，这是5G毫米波系统的最大优势之一，适用于大量4k/8k视频业务的场景。
+
+具体来说，毫米波或极高频（Extremely high frequency, EHF）是指波长短于超高频(SHF)的电磁波，它的波长由1 mm到10 mm，所对应的频率范围是30～300 GHz\cite{enwiki:1021979549}。
+现阶段主要毫米波应用于气象雷达、空间通信、射电天文等方面。
+在5G通信中，美国已率先启用毫米波频段，其毫米波部署最为广泛，AT\&T、Verizon和T-Mobile从2018年起陆续在美国国内的城市开通利用毫米波频谱的5G商用网络，而中国现在部署的主要是Sub-6 GHz频段\cite{ZTE2020}。
+中国的三大运营商从2017年开始就不断联合各厂家进行了5G毫米波的关键技术测试和验证，随着2020年3月工信部推动5G加快发展的通知以及2022年冬奥会毫米波应用场景的预期，毫米波大规模商用的脚步越来越近\cite{ZTE2020}。
+最近中新社报道称，5G毫米波将赋能北京2022年冬奥会。可以想象，有了毫米波技术的加持，这一届冬奥会会给我们带来不一样的精彩。
+
+但现阶段5G以及毫米波的应用还存在覆盖差、成本高、能耗高等痛点问题。由于频点较高，毫米波呈现准光学传播特性，穿透能力很弱，绕射、散射很不明显。如\autoref{tab:Loss-contrast}所示，生活中高楼、墙面、混凝土、钢筋、玻璃、人体等物体的阻挡会造成信号衰减严重，在极端情况下，26 GHz毫米波于3.5 GHz的穿透损耗高90 dB，大雨等恶劣天气也会对毫米波的覆盖产生较大的影响。另外，人体的遮挡在极高频时也会有不可忽视的影响。
+从上述的毫米波的传播特性来看，它适用于室内室外的视距（Line-of-sight, LoS）通信，而不适用于室内外有较高的穿透损耗的场景。
+如\autoref{fig:Overlay-comparison}为在城市中模拟的3.5 GHz和26 GHz两种频段的覆盖范围对比。
+从右图可以看到，对于视距场景，毫米波覆盖尚可；而被遮挡的区域就差强人意了。
+我们以参考信号接收功率（Reference Signal Receiving Power, RSRP）不低于－110 dBm为基准，26 GHz的总体覆盖（按面积计算）只能达到 3.5 GHz 的62\%。
+
+\begin{generaltab}{3.5 GHz和26 GHz下不同材料的穿透损耗（dB）对比\cite{ZTE2020}}{tab:Loss-contrast}
+	\begin{tabularx}{\textwidth}{ccccccc}
+		\toprule
+		        & 混凝土 &  木头  & 雨衰（10 mm/hr） & 人体损耗 & 普通多层玻璃 & IRR玻璃 \\ \midrule
+		3.5 GHz & 19  & 5.27 &      0       &  3   &  2.7   & 24.05 \\
+		26 GHz  & 109 & 7.97 &     1.57     & 9-13 &  7.2   & 30.8  \\ \bottomrule
+	\end{tabularx}
+\end{generaltab}
+
+\begin{generalfig}[htb]{3.5 GHz和26 GHz覆盖对比\cite{ZTE2020}}{fig:Overlay-comparison}
+	\includegraphics[width=0.8\linewidth]{Figures/Overlay-comparison.JPG}
+\end{generalfig}
+
+从毫米波设备的硬件架构来看，毫米波设备由大量的射频链路、射频开关、移相器组成用来实现模拟波束赋形。这样的收发器的组成需要所需的天线、放大器等器件相比现有通信方案增加多达数十倍，造成了成本长时间居高不下。
+
+能耗问题成为近年来
+
+由于毫米波的
 面对这些问题，智能反射面给出了有效的解决方案。
 
 \subsection{国内外现状分析}
@@ -114,11 +145,18 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 本团队近期自主开发完成由1100个单元组成的智能超表面原型样机。团队在华中科技大学校
 园内进行了室外空口性能测试，测得接收信号强度提升500倍，实现了500米远距离传输测
 试，在智能超表面辅助下实现了高清视频的实时播放。
-\subsection{本文组织结构}
+
+\subsection{本文主要研究内容与组织结构安排}
+
+本文的主要研究内容是如何利用可编程电磁超表面增强 5 GHz WiFi的覆盖。文中 设计 了 一 个由 可编程超表面及其控制电路 构成的智能反射面系统 然后 将 它
+
+招商银行股份有限公司
 
 \section{相关理论}
 
 啊这，不知道有什么原理呢。
+
+\subsection{波束赋形}
 
 \section{系统设计}
 
@@ -148,9 +186,6 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 
 \subsection{第三小节}
 
-
-上市
-en
 \begin{algorithm}
 	\caption{Greedy Fast Beamforming Algorithm}
 	\label{alg:GreedyAlgorithm}
@@ -318,10 +353,14 @@ en
 \end{itemize}
 
 \begin{thankpage}
-	感谢老师
+	
+	{\itshape “文章本天成，妙手偶得之。”}
+
+	{\itshape “朝发鸡鸣未响，归路晚风凉。汗洒澄池桃李，几度银杏黄。”}
+
 	\begin{figure}[htb]
 		\flushright
-		\includegraphics[width=16mm]{Figures/Seal-pxl.pdf}
+		\includegraphics[width=15mm]{Figures/Seal-pxl.pdf}
 	\end{figure}
 
 	\begin{flushright}
@@ -337,6 +376,7 @@ en
 \bibliography{Bibs/references_Gradu}
 
 \begin{appendices}
+	\section{系统电路原理图}
 	\section{这是第一个附录}
 	这里是附录环境，其中的section、subsection、subsubsection已经变为附录的样式，并且会以这种样式加入目录中。
 	\subsection{附录可以有小节}
