@@ -1,2 +1,2 @@
 # PxlGraduPaper
-AI Rabbit's Undergraduate thesis
+AI Rabbit's Undergraduate project.
