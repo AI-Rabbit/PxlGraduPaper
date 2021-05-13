@@ -191,7 +191,7 @@ Zhuqi Li等人在室内环境中部署了一个$ 6 \times 6 $的可重构发射�
 进一步地，唐万凯等人设计了一个基于可编程表面的正交相移键控（QPSK）无线发射机的原型，实现了2.048 Mbit/s的数据传输速率，视频流也能实时传输\cite{Tang2019Wireless}。
 
 \subsection{本文主要研究内容与组织结构安排}
-
+todo
 本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。
 文中首先在\autoref{sec:theory}介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及波束赋形理论。
 
@@ -216,15 +216,51 @@ Zhuqi Li等人在室内环境中部署了一个$ 6 \times 6 $的可重构发射�
 那么，对于光所走的实际路径，总相移$ \Phi\left(\vec{r}_{\mathrm{s}}\right)+\int_{A}^{B} \vec{k} \cdot d \vec{r} $是固定不变的，其中$ \vec{k} $是传播光的波矢。
 这提供了反射和折射定律的一般化，其适用于整个光谱中两种介质之间的大范围的亚波长结构化界面。
 
-下面考虑{\bfseries 广义反射和折射定律}，在两种介质的界面上引入一个突变的相移，称为相位不连续，这使得我们可以通过应用费马原理来重新审视反射和折射定律。
-在考虑一个角度为$\theta_1$的入射平面波。假设两条光路无限接近实际光路(图1)，那么它们之间的相位差为零
-
-两种介质之间的界面是人为构造的，以便在光路中引入突然的相移，这是沿着界面的位置的函数。f和是两条路径(蓝色和红色)穿过边界的相移。
-
 \begin{generalfig}[htb]{广义斯涅尔折射定律的示意图}{fig:Snell-Law}
 	\includegraphics[width=0.5\linewidth]{Figures/Snell-Law.pdf}
 \end{generalfig}
 
+下面考虑{\bfseries 广义反射和折射定律}，在两种介质的界面上引入一个突变的相移，称为相位不连续，这使得我们可以通过应用费马原理来重新审视反射和折射定律。
+\autoref{fig:Snell-Law}中的入射平面波入射角为$\theta_1$，假设两条光路无限接近实际光路，那么它们之间的相位差为零，有：
+\begin{equation}
+	k_\mathrm{o} n_1 \sin (\theta_1) dx + (\Phi + d\Phi) = k_\mathrm{o} n_2 \sin (\theta_2) dx + \Phi
+	\label{eq:Generalized-snell-law-pre}
+\end{equation}
+其中$ \theta_2 $为折射角，$ \Phi $和$ \Phi + d\Phi $分别是两条路径穿过界面位置处的相位不连续性，$ dx $是两条路径界面处的距离差，$n_1$是上层介质的折射率，$n_2$为下层介质的折射率，$k_\mathrm{o}=2 \pi / \lambda_\mathrm{o}$，$\lambda_\mathrm{o}$为真空中的光波波长。
+
+如果沿界面的相位梯度被设计为常数，由\autoref{eq:Generalized-snell-law-pre}可以推导出广义的斯涅尔折射定律：
+\begin{equation}
+	n_2 \sin \theta_2 - n_1 \sin \theta_1 = \frac{1}{k_\mathrm{o}} \frac{d \Phi}{dx}
+	\label{eq:Generalized-snell-law}
+\end{equation}
+\autoref{eq:Generalized-snell-law}意味着折射光束可以具有任意方向，只要沿界面引入相位不连续性的合适的恒定梯度$d\Phi/dx$。
+由于在\autoref{eq:Generalized-snell-law}中引入了非零的相位梯度$d\Phi/dx$，两个入射角$\pm \theta_1$会导致不同的折射角。
+因此，全内反射在$n_2<n_1$时有两种可能的临界角：
+\begin{equation}
+	\theta_{\mathrm{c}}=\arcsin \left(\pm \frac{n_{2}}{n_{1}}-\frac{\lambda_{\mathrm{o}}}{2 \pi n_{1}} \frac{d \Phi}{d x}\right)
+\end{equation}
+
+同理，由\autoref{eq:Generalized-snell-law}也可以推到出广义斯涅尔反射定律。对于反射的情况，入射波和反射波都在介质1中，所以有$n_2=n_1$，可得：
+\begin{equation}
+	\sin \theta_2 - \sin \theta_1 = \frac{1}{k_\mathrm{o} n_1} \frac{d \Phi}{dx}
+	\label{eq:Generalized-snell-law-reflection}
+\end{equation}
+此时$\theta_2$是反射角，入射角$\theta_1$和反射角$\theta_2$之间存在非线性关系，这与传统的镜面反射明显不同。
+由\autoref{eq:Generalized-snell-law-reflection}可知总有一个临界角$\theta_{\mathrm{c}}^{\prime}$满足：
+\begin{equation}
+	\theta_{\mathrm{c}}^{\prime}=\arcsin \left(1-\frac{\lambda_{\mathrm{o}}}{2 \pi n_{1}}\left|\frac{d \Phi}{d x}\right|\right)
+\end{equation}
+在入射角$\theta_1 = \theta_{\mathrm{c}}^{\prime}$时，反射波束将不存在。
+
+广义反射和折射定律可以统一写成如下的形式\cite{ding2017gradient}：
+\begin{eqnarray}
+	k_{x}^{(r)}-k_{x}^{(i)}=\frac{d \Phi}{d x} \\
+	k_{x}^{(t)}-k_{x}^{(i)}=\frac{d \Phi}{d x}
+\end{eqnarray}
+其中$k_{x}^{(i, r, t)}=k_{\mathrm{o}} n_{i, i, t} \sin \theta_{i, r, t}$表示平面波矢量。当$\frac{d \Phi}{d x}=0$时，即得到经典的斯涅尔定律。
+
+
+	
 \subsection{波束赋形理论}
 
 \subsection{本章小结}
