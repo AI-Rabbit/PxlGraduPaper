@@ -136,16 +136,38 @@ RIS能够通过被动反射接收信号在基站和移动用户之间形成虚�
 当基站和终端之间的直射链路被高层建筑阻断时，通过RIS的智能部署和设计，可以构建软件定义的无线环境，进而使接收信的信噪比（SINR）增强。
 与传统的中继系统（如放大转发和解码转发）相比，RIS不需要专用的大功率电源来运行，其功耗和硬件复杂度有着其他技术难以望其项背的优势\cite{di2020reconfigurable}。
 
-2014年，中国科学院院士崔铁军教授首次提出了可编程超表面并进行了实验验证，其基本结构如\autoref{fig:ris}所示\cite{cui2014coding}。
+2014年，中国科学院院士崔铁军教授首次提出了智能超表面并进行了实验验证，其基本结构如\autoref{fig:ris}所示\cite{cui2014coding}。
 这是一种具有可编程电磁特性的二维薄层人工电磁表面结构，可以应用于从微波到可见光的各种波段中\cite{CHN_zhang2017}。
 从\autoref{fig:ris}中可以看出，超表面由精心设计的电磁单元规则排列而成，这些电磁单元通常由金属铜片、电磁介质和可调元件\footnote{这里可调元件指的是变容二极管、PIN二极管、射频开关、MEMS器件等有不同状态的元件。}组成。
 通过控制电磁单元中的可调元件，以可编程的方式更改反射的电磁波的电磁参数（例如幅度和相位）\cite{CHN_zhou2020}。
 
-\begin{generalfig}[htb]{可编程超表面示意图}{fig:ris}
+\begin{generalfig}[htb]{智能超表面示意图}{fig:ris}
 	\includegraphics[width=0.8\linewidth]{Figures/ris.pdf}
 \end{generalfig}
 
+如\autoref{fig:Reflected-refracted}所示为智能超表面的异常反射、折射示意图，智能超表面可以将入射信号反射和折射到非斯涅尔定律预测的异常方向，可以改变入射电磁波的波形和极化方向\cite{Renzo2019}。
+就无线电波的传播而言，基于超材料元表面的RIS就像一个突变的电磁间断，改变了散射场。
+如前所述，实现智能超表面的功能的关键要素便是元表面单元结构的设计。
+元表面是由亚波长金属或电介质散射粒子（称为亚原子）形成的亚波长阵列\cite{basar2019wireless}。
+\autoref{fig:Reflected-refracted}描绘了电磁波对于给应的入射角，元表面的预期反射相应和折射相应，与普通平面的反射$ \theta_2 =  \theta_1 $不同，超表面可以使$ \theta_3 \ne \theta_1 $。
+
+\begin{generalfig}[htb]{智能超表面的异常反射、折射}{fig:Reflected-refracted}
+	\includegraphics[width=0.8\linewidth]{Figures/Reflected-refracted.pdf}
+\end{generalfig}
+
+在智能超表面中，每个单元的反射系数$ \Gamma _ {n,m} $ 是可以根据外界环境调整改变的。
+\autoref{fig:ris}上的可调元件一般被安装在单元上。
+这样，通过外部的控制电路控制可调元件的状态，就可以操纵元表面上无线电波的波前，以实现信号调制或波束赋形。
+智能超表面的中央控制器一般采用现场可编程逻辑门阵列（FPGA）或微控制器。
+通过软件设计，超表面可以实现对移动通信中电磁信号的实时调控。目前，国内外有关智能超表面在移动通信领域的研究主要集中在两个方向\cite{CHN_zhou2020}，下面详细介绍国内外研究现状。
+
 \subsection{国内外现状分析}
+
+目前智能反射面的第一个主要研究方向是利用它进行直接信息调制。
+
+\begin{generalfig}[htb]{智能超表面的异常反射、折射}{fig:Ris-2way}
+	\includegraphics[width=0.8\linewidth]{Figures/Ris-2way.pdf}
+\end{generalfig}
 
 智能超表面（也被称为智能反射面）的主要组成部分是可编程人工电磁表面结构。
 该结构是一种由精心设计的亚波长单元按照周期或非周期性的排列组成的，具有可重配电磁特性的二维薄层。
@@ -171,9 +193,12 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 园内进行了室外空口性能测试，测得接收信号强度提升500倍，实现了500米远距离传输测
 试，在智能超表面辅助下实现了高清视频的实时播放。
 
+
+
 \subsection{本文主要研究内容与组织结构安排}
 
-本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。文中首先在\autoref{sec:theory}介绍了电磁超表面的相关理论，包括
+本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。
+文中首先在\autoref{sec:theory}介绍了电磁超表面的相关理论，包括广义反射定律和折射定律和波束赋形理论
 
 
 在\autoref{sec:simulation}
@@ -183,16 +208,20 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 
 招商银行股份有限公司
 
-\section{超表面相关理论}\label{sec:theory}
+\section{超表面基础理论}\label{sec:theory}
 
 \subsection{广义反射和折射定律}
 
 
 \subsection{波束赋形理论}
 
+\subsection{本章小结}
+
 \section{建模仿真分析}\label{sec:simulation}
 
-\section{系统设计}
+\subsection{本章小结}
+
+\section{系统设计}\label{sec:design}
 
 \subsection{超表面单元设计}
 
@@ -202,11 +231,14 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 
 \subsection{算法设计}
 
-这个系统怎么设计呢？\footnote{哈哈哈}
+这个系统怎么设计呢？
 
+\subsection{本章小结}
 
 \section{实验数据}\label{sec:experiment}
+\subsection{本章小结}
 \section{总结与展望}\label{sec:conclusion}
+
 \subsection{论文研究工作总结}
 \subsection{未来工作展望}
 \section{段落}
@@ -399,6 +431,13 @@ GHz。实验表明它可以使接收信号强度增加10倍，将信道容量提
 
 \begin{thankpage}
 	
+	\begin{center}
+		{\itshape “满纸荒唐言，一把辛酸泪。”}
+	\end{center}
+	
+
+
+
 	{\itshape “文章本天成，妙手偶得之。”}
 
 	{\itshape “朝发鸡鸣未响，归路晚风凉。汗洒澄池桃李，几度银杏黄。”}
