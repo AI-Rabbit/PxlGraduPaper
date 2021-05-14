@@ -215,7 +215,7 @@ todo
 
 超表面和超材料有着完善复杂的理论，本章根据后续内容的需要着重介绍超表面对电磁信号的调控机理。
 
-\subsection{广义反射和折射定律}
+\subsection{广义反射和折射定律}\label{subsec:snell-law}
 
 电磁波在超表面上会发生相位或幅度的突变，这一现象的理论依据是广义斯涅尔定律\cite{9326394}。
 2011年Capasso教授等人发现了相位不连续的电磁波传播，并提出了广义反射和折射定律\cite{yu2011light}。
@@ -275,7 +275,6 @@ todo
 \subsection{超表面对电磁波的调控机理}
 
 todo
-
 	
 \subsection{波束赋形理论}
 
@@ -285,22 +284,42 @@ todo
 
 本章主要介绍了
 
-\section{物理、传播和路径损耗建模}
+\section{物理、传播和路径损耗建模}\label{sec:modeling}
 
-本章中，我们使用物理光学技术导出了远场路径损耗，并解释了为什么表面由许多元素组成，这些元素单独充当散射体，但可以在特定波束宽度的期望方向上联合波束形成信号。
+本章中，我们使用物理光学知识导出了远场路径损耗\cite{emil2019intelligent}，并解释了为什么智能超表面由许多元素组成，这些元素单独充当散射体，但可以在特定波束宽度的期望方向上联合波束赋形。本章首先将从无源金属表面的散射分析引入。
 
+\subsection{无源金属表面}\label{subsec:metal-plate}
 
-\subsection{无源金属表面}
-
-在这一节中，我们回顾了由有限尺寸的“无源”金属（完全导电）板散射的波形的场强和波束宽度的研究。这些结果将被用来解释智能超表面的理想工作状态。
+在这一节中，我们总结了由有限尺寸的无源的完全导电的金属板散射的波形的场强和波束宽度的研究。这些结果将被用来解释智能超表面的理想工作状态。
 
 我们考虑一个尺寸为$a \times b$的厚度可以忽略的矩形完美导电板，且位于水平面上（即$\boldsymbol{e}_{x}, \boldsymbol{e}_{y}$所在平面）。一个距离为$d_i$的很远的点源辐射具有波数为$k$（$k = 2\pi / \lambda$，$\lambda$为波长）的线性极化电磁波。
 为了便于讨论，我们假设源的极化是这样的，即电场平行于$\boldsymbol{e}_{x}$，而磁场位于$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$所跨越的平面上。
+$\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波的坡印亭矢量与$\boldsymbol{e}_{z}$的夹角，$\theta_{s}$为散射角，如\autoref{fig:metal-plate}所示。
+
+\begin{generalfig}[htb]{入射波被金属板散射示意图}{fig:metal-plate}
+	\includegraphics[width=0.5\linewidth]{Figures/metal-plate.pdf}
+\end{generalfig}
+
+进一步假设，相对于金属板的尺寸，$d_i$足够大，符合远场模型。此时入射波为幅度为$E_i$的平面波。
+这时入射的平面波的电场和磁场分布可以表示为：
+\begin{equation}
+	\begin{array}{l}
+		\mathbf{E}_{i}=E_{i} e^{-j k\left(\sin \left(\theta_{i}\right) y-\cos \left(\theta_{i}\right) z\right)} \boldsymbol{e}_{x} \\
+		\mathbf{H}_{i}=-\frac{E_{i}}{\eta}\left(\cos \left(\theta_{i}\right) \boldsymbol{e}_{y}+\sin \left(\theta_{i}\right) \boldsymbol{e}_{z}\right) e^{-j k\left(\sin \left(\theta_{i}\right) y-\cos \left(\theta_{i}\right) z\right)}
+	\end{array}
+\end{equation}
+其中$\eta$是介质的特征阻抗。
+
+电场会引起电子在金属板中的运动。
+由于电场与$\boldsymbol{e}_{y}$正交，电子将沿$\boldsymbol{e}_{x}$方向移动，而不会沿$\boldsymbol{e}_{y}$方向移动。
+因为金属板的厚度忽略不计，电子也不会沿$\boldsymbol{e}_{z}$方向移动。
+运动的电子感应电磁辐射，产生散射波。
 
 \begin{lemma}
-	在$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$平面内，对于任意观察角度$\theta_{s} \in\left[0, \frac{\pi}{2}\right]$（相对于$\boldsymbol{e}_{z}$），在远场观察距离$r \geq \frac{2 \max \left(a^{2}, b^{2}\right)}{\lambda}$时，分散场的平方幅度为：
+	在$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$平面内，对于任意观察角度$\theta_{s} \in\left[0, \frac{\pi}{2}\right]$（相对于$\boldsymbol{e}_{z}$），在远场观察距离$r \geq \frac{2 \max \left(a^{2}, b^{2}\right)}{\lambda}$时，散射场的平方幅度为：
 	\begin{equation}
 		S\left(r, \theta_{s}\right)=\left(\frac{a b}{\lambda}\right)^{2} \frac{E_{i}^{2}}{r^{2}} \cos ^{2}\left(\theta_{i}\right)\left(\frac{\sin \left(\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)\right)}{\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)}\right)^{2}
+		\label{eq:scattered-field}
 	\end{equation}
 \end{lemma}
 
@@ -308,12 +327,61 @@ todo
 	这个结果来自标准的物理光学技术（忽略边缘效应）\cite{balanis2012advanced}。
 \end{proof}
 
+从\autoref{eq:scattered-field}中关于散射场的平方幅度的公式可以发现，对于我们考虑的极化方式来说，当观察角度$\theta_{s}=\theta_{i}$即镜面反射时，$S\left(r, \theta_{s}\right)$达到最大值，这和斯涅尔反射定律所描述的是吻合的。
 
+\subsubsection{散射波的波束宽度}
 
-metal-plate
-\begin{generalfig}[htb]{入射波被金属板散射示意图}{fig:metal-plate}
-	\includegraphics[width=0.5\linewidth]{Figures/metal-plate.pdf}
-\end{generalfig}
+\autoref{eq:scattered-field}揭示了散射场就像是一个波束，随着$\theta_{s}$远离$\theta_{i}$，强度越来越弱。在\normalcite{emil2019intelligent}中，作者运用三角函数和泰勒展开的数学知识推导出散射波的$-3\,\mathrm{dB}$宽度为：
+\begin{equation}
+	2\left|\theta_{s}-\theta_{i}\right|<2\sqrt{\frac{1}{2} \frac{3 \lambda^{2}}{\pi^{2} b^{2} \cos ^{2}\left(\theta_{i}\right)}}=2\sqrt{\frac{3}{2}} \frac{\lambda}{\pi b \cos \left(\theta_{i}\right)}
+\end{equation}
+
+这个不等式表明，$-3\,\mathrm{dB}$的波束宽度与金属板板宽$b$成反比。波束宽度也与波长$\lambda$成正比，因此普通尺寸的板可以在可见光谱中提供非常窄的波束宽度，就像一束光照射在镜子上一样。
+但是在典型的无线电光谱波段中，波束宽度要宽四至五个数量级。
+
+\subsubsection{多个相邻金属表面}
+
+由于单个金属板的尺寸有限，有时可以部署多个相邻的板。
+如果板子之间的间隙足够大，那么耦合效应可以忽略。
+当来自不同的金属板的散射场在给定位置被接收时，相对的相移将导致干涉相长或干涉相消。
+在理想的干涉相长下，来自$N$个平板的平方场强为：
+\begin{equation}
+	\left(N \sqrt{S\left(r, \theta_{s}\right)}\right)^{2}=N^{2} S\left(r, \theta_{s}\right)
+	\label{eq:Multiple-Metallic-Surfaces}
+\end{equation}
+
+\autoref{eq:Multiple-Metallic-Surfaces}表明，只要总面积确定，无论是由许多小的还是几个大的金属板组成，最大接收功率是相同的。
+
+\subsection{智能超表面的系统模型}
+
+智能超表面的主要目的是实现“异常反射”\cite{liang2015anomalous}，这意味着对散射场进行整形，使主波束指向接收器。考虑一个由与\autoref{fig:metal-plate}相同尺寸的超表面和相同的撞击平面波组成的反射系统。RIS的目标是实现全反射，并将主光束指向我期望方向$\theta_r$。
+因此，超表面必须被设计成获得反射或散射波的以下理想场分布：
+\begin{equation}
+	\begin{array}{l}
+		\mathbf{E}_{r}=E_{r} e^{-j k\left(\sin \left(\theta_{r}\right) y+\cos \left(\theta_{r}\right) z\right)} \boldsymbol{e}_{x} \\
+		\mathbf{H}_{r}=-\frac{E_{r}}{\eta}\left(\sin \left(\theta_{r}\right) \boldsymbol{e}_{z}-\cos \left(\theta_{r}\right) \boldsymbol{e}_{y}\right) e^{-j k\left(\sin \left(\theta_{r}\right) y+\cos \left(\theta_{r}\right) z\right)}
+	\end{array}
+\end{equation}
+
+使用\autoref{subsec:snell-law}中介绍的广义斯涅尔定律，利用\autoref{eq:Generalized-snell-law-reflection}，可以通过调整超表面相位分布或表面阻抗将入射波$\left(\mathbf{E}_{i}, \mathbf{H}_{i}\right)$转换成散射波$\left(\mathbf{E}_{r}, \mathbf{H}_{r}\right)$。
+在超表面上$(z = 0)$，入射和反射电场的叠加可以写成\cite{Asadchy_2016}：
+\begin{equation}
+	\mathbf{E}_{t}=E_{i} e^{-j k \sin \left(\theta_{i}\right) y} \boldsymbol{e}_{x}+E_{r} e^{-j k \sin \left(\theta_{r}\right) y} \boldsymbol{e}_{x}
+\end{equation}
+由此可得，期望反射系数的期望相位是：
+\begin{equation}
+	\phi_{r}(y)=\angle\left(\frac{E_{r} e^{-j k \sin \left(\theta_{r}\right) y}}{E_{i} e^{-j k \sin \left(\theta_{i}\right) y}}\right)=-k \sin \left(\theta_{r}\right) y+k \sin \left(\theta_{i}\right) y
+\end{equation}
+并且对$y$进行微分给出了广义斯内尔定律中反射系数的梯度：
+\begin{equation}
+	k\left(\sin \left(\theta_{i}\right)-\sin \left(\theta_{r}\right)\right)=\frac{d \phi_{r}(y)}{d y}
+\end{equation}
+它给出了$\theta_i,\theta_r$和局部表面相位$\phi_{r}(y)$之间的关系。
+
+\subsubsection{传播和路径损耗模型}
+
+与单纯的金属表面不同，智能超表面必须由许多小单元组成，细致得重新配置每个单元的相位，获得角度为$\theta_r$的主反射波束。
+
 
 \begin{example}
 	
