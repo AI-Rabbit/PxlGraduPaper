@@ -307,6 +307,7 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 		\mathbf{E}_{i}=E_{i} e^{-j k\left(\sin \left(\theta_{i}\right) y-\cos \left(\theta_{i}\right) z\right)} \boldsymbol{e}_{x} \\
 		\mathbf{H}_{i}=-\frac{E_{i}}{\eta}\left(\cos \left(\theta_{i}\right) \boldsymbol{e}_{y}+\sin \left(\theta_{i}\right) \boldsymbol{e}_{z}\right) e^{-j k\left(\sin \left(\theta_{i}\right) y-\cos \left(\theta_{i}\right) z\right)}
 	\end{array}
+	\label{eq:e-field}
 \end{equation}
 其中$\eta$是介质的特征阻抗。
 
@@ -316,6 +317,7 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 运动的电子感应电磁辐射，产生散射波。
 
 \begin{lemma}
+	\label{lemma:scattered-field}
 	在$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$平面内，对于任意观察角度$\theta_{s} \in\left[0, \frac{\pi}{2}\right]$（相对于$\boldsymbol{e}_{z}$），在远场观察距离$r \geq \frac{2 \max \left(a^{2}, b^{2}\right)}{\lambda}$时，散射场的平方幅度为：
 	\begin{equation}
 		S\left(r, \theta_{s}\right)=\left(\frac{a b}{\lambda}\right)^{2} \frac{E_{i}^{2}}{r^{2}} \cos ^{2}\left(\theta_{i}\right)\left(\frac{\sin \left(\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)\right)}{\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)}\right)^{2}
@@ -381,16 +383,52 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 \subsubsection{传播和路径损耗模型}
 
 与单纯的金属表面不同，智能超表面必须由许多小单元组成，细致得重新配置每个单元的相位，获得角度为$\theta_r$的主反射波束。
+如\autoref{subsec:metal-plate}中所述，\autoref{eq:e-field}中的入射波电场在$\boldsymbol{e}_{x}$方向上感应出表面电流。
+通过调整每个元件的表面阻抗，调整该电流，以获得近似广义斯内尔定律所需的表面相位分布。
 
+\begin{lemma}
+	当使用智能超表面向$\theta_r$方向反射信号时，任意观察角度$\theta_{s} \in\left[-\frac{\pi}{2}, \frac{\pi}{2}\right]$下，在远场观察距离$r \geq \frac{2 \max \left(a^{2}, b^{2}\right)}{\lambda}$时，散射场平方幅度为：
+	\begin{equation}
+		S_{\mathrm{IRS}}\left(r, \theta_{s}, E_{i}^{2}\right) =\left(\frac{a b}{\lambda}\right)^{2} \frac{E_{i}^{2} \cos ^{2}\left(\theta_{i}\right)}{r^{2}}\left(\frac{\sin \left(\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{r}\right)\right)\right)}{\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{r}\right)\right)}\right)^{2}
+	\end{equation}
+\end{lemma}
 
-\begin{example}
-	
-\end{example}
+\begin{proof}
+	超表面的厚度可以忽略不计，这使得我们可以写出超表面上某处$(z=0, y=y^\prime)$的电流密度$J_{x}=\frac{2 E_{i}}{\eta} \cos \left(\theta_{i}\right) e^{-j k \sin \left(\theta_{r}\right) y^{\prime}}$。假设超表面是无损的，上述引理利用引理~\ref{lemma:scattered-field}可以证明。
+\end{proof}
+
+假设基站端的发射机发射功率为$P_t$，发射天线的增益为$G_t$，$E_i$和$P_t$之间的关系可以表示为：
+\begin{equation}
+	\frac{E_{i}^{2}}{2 \eta}=\frac{P_{t} G_{t}}{4 \pi d_{i}^{2}}
+\end{equation}
+此外，假设接收器天线的有效面积为$\frac{\lambda^2}{4\pi} G_r$，其中$G_r$为接收天线的增益。可得，距离为$r$时，在方向$\theta_r$上，接收信号功率$P_r$为：
+\begin{equation}
+	P_{r}\left(P_{t}, d_{i}, r, \theta_{s}\right)=\frac{1}{2 \eta} S_{\mathrm{IRS}}\left(r, \theta_{s}, \frac{P_{t} G_{t} \eta}{2 \pi d_{i}^{2}}\right)\left(\frac{\lambda^{2}}{4 \pi} G_{r}\right)
+\end{equation}
 
 \begin{corollary}
-	
+	当使用智能超表面向$\theta_r$方向上反射电磁波时，远场距离为$r$时的路径损耗是：
+	\begin{equation}
+		\begin{array}{l}
+			\beta_{\mathrm{IRS}}\left(r, d_{i}, \theta_{s}\right)=\frac{P_{r}\left(P_{t}, d_{i}, r, \theta_{s}\right)}{P_{t}} \\
+			=\frac{G_{t} G_{r}}{(4 \pi)^{2}}\left(\frac{a b}{d_{i} r}\right)^{2} \cos ^{2}\left(\theta_{i}\right)\left(\frac{\sin \left(\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{r}\right)\right)\right)}{\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{r}\right)\right)}\right)^{2}
+		\end{array}
+	\end{equation}
+
+	当接收机处于理想位置时，即$\theta_s=\theta_r$，路径损耗简化为：
+	\begin{equation}
+		\beta_{\mathrm{IRS}}\left(r, d_{i}, \theta_{r}\right)=\frac{G_{t} G_{r}}{(4 \pi)^{2}}\left(\frac{a b}{d_{i} r}\right)^{2} \cos ^{2}\left(\theta_{i}\right)
+	\end{equation}
 \end{corollary}
 
+\subsubsection{智能超表面的散射体阵列模型}
+
+\subsubsection{智能超表面的传输系统模型}
+
+考虑直射径下发射机和接收机之间的信道为$\sqrt{\beta_{\mathrm{sd}}} e^{j \phi_{\mathrm{sd}}}$，囊括智能超表面的反射路径，接收信号可以表示为：
+\begin{equation}
+	y=\left(\sqrt{\beta_{\mathrm{IRS}}^{s}} \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}}+\sqrt{\beta_{\mathrm{sd}}} e^{j \phi_{\mathrm{sd}}}\right) x+n
+\end{equation}
 
 在这封信中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出红外反射器必须如何设计来模拟这种表面，同时控制散射波的方向性，从而填补了这一空白。这就产生了一个严格的路径损耗模型，以及一种建立可用于进一步研究的系统模型的方法。
 
@@ -421,27 +459,6 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 因此，它以近似恒定的增益向所有感兴趣的方向散射输入信号
 
-\begin{theorem}[勾股定理]
-    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
-\end{theorem}
-
-
-\begin{lemma}[勾股定理]
-    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
-\end{lemma}
-
-\begin{theorem}[勾股定理]
-    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
-\end{theorem}
-
-\begin{proof}
-    ...
-    所以：
-    \[
-        G(x, y) = G(y, x).  \qedhere
-    \]
-\end{proof}
-
 
 \subsection{分析性能比较}
 \subsection{仿真性能比较}
@@ -449,7 +466,7 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 本章
 
-\section{系统设计}\label{sec:design}
+\section{系统设计与实现}\label{sec:design}
 
 \subsection{智能超表面选择}
 
@@ -458,17 +475,19 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 \begin{figure}[htb]
 	\centering
-	\subfloat[三维仿真图]{\includegraphics[width=0.5\linewidth]{Figures/data.png}}
-	\subfloat[实物图]{\includegraphics[width=0.5\linewidth]{Figures/data.png}}
+	\subfloat[三维仿真图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-3D.JPG}}
+	\hfil
+	\subfloat[实物图]{\includegraphics[width=0.6\linewidth]{Figures/28-GHz-RIS-real.jpg}}
 	\caption{28 GHz智能超表面}
 	\label{fig:28-GHz-RIS}
 \end{figure}
 
-它的主要优点如下：
+它的主要优良特性如下：
 \begin{enumerate}
-	\item 采用xx公司的PIN二极管，可以工作
-	\item 一共由$16\times16=256$个单元，单元数量众多，且可以独立控制。
-	\item 采用模块化设计
+	\item 采用xx公司的PIN二极管，可以工作在至的频率范围内，工作带宽广；
+	\item 一共由$16\times16=256$个单元，单元数量众多，且可以独立控制；
+	\item 28 GHz智能超表面拥有xx MHz的工作带宽；
+	\item 采用模块化设计，可以多块拼接，组成大规模RIS阵列。
 \end{enumerate}
 
 \subsection{控制电路设计}
@@ -477,65 +496,23 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 \subsection{驱动、固件设计}
 
-\subsection{算法设计}
-
-这个系统怎么设计呢？
-
-\begin{algorithm}
-	\caption{Greedy Fast Beamforming Algorithm}
-	\label{alg:GreedyAlgorithm}
-	\begin{algorithmic}[1]
-		\STATE \textbf{Input: } The feedback of RX signal power $p_t$.
-		\STATE \textbf{Output: } The reflection coefficients matrix.
-		\STATE Initialize a reflection coefficients matrix $ \mathbf{R}_0\in \mathbb{C}^{M \times N }$;
-		\STATE Receive initial feedback of the RX signal power $ p_0 $;
-
-		\STATE // Horizontal search;
-		\FOR {each $n \in [1, N]$}
-		\STATE  $ \mathbf{R}_{n} \leftarrow [\mathbf{r}_{n-1,1},\cdots,\mathbf{r}_{n-1,n-1},- \mathbf{r}_{n-1,n}, \mathbf{r}_{n-1,n+1}\cdots,\mathbf{r}_{n-1,N}] $;
-		\STATE Receive feedback $ p_{n} $ using configuration $ \mathbf{R}_{n}$;
-		\IF {$ p_{n-1} \ge p_{n}$}
-		\STATE $ \mathbf{R}_{n} \leftarrow \mathbf{R}_{n-1}$;
-		\ENDIF
-		\ENDFOR
-		\RETURN{reflection coefficients matrix $ \mathbf{R}_{N}$;}
-
-		\STATE // Vertical search;
-		\STATE Denote $ \mathbf{R}_{N} =[\mathbf{s}_{N,1},\mathbf{s}_{N,2},\cdots,\mathbf{s}_{N,M}]^\mathrm{T}$;
-		\FOR {each $m \in [1, M]$}
-		\small
-		\STATE  $\mathbf{R}_{N+m} \leftarrow [\mathbf{s}_{N+m-1,1},\cdots,\mathbf{s}_{N+m-1,m-1},- \mathbf{s}_{N+m-1,m}, \mathbf{s}_{N+m-1,m+1}, \cdots, \mathbf{s}_{N+m-1,M}]^\mathrm{T}$;
-		\normalsize
-		\STATE Receive feedback $ p_{N+m} $ using configuration $\mathbf{R}_{N+m}$;
-		\IF {$ p_{N+m-1} \ge p_{N+m}$}
-		\STATE $ \mathbf{R}_{N+m} \leftarrow \mathbf{R}_{N+m-1}$;
-		\ENDIF
-		\ENDFOR
-		\RETURN{reflection coefficient matrix $ \mathbf{R}_{M+N}$.}
-	\end{algorithmic}
-\end{algorithm}
+\subsection{码本设计}
 
 
 \subsection{本章小结}
 
 本章
 
-\section{实验数据}\label{sec:experiment}
-\subsection{本章小结}
 \section{总结与展望}\label{sec:conclusion}
 
 \subsection{论文研究工作总结}
+
+
 \subsection{未来工作展望}
-
-
-
-
 
 \section{参考文献和交叉引用}\label{sec:ref}
 \subsection{参考文献}
 这是一个参考文献引用的范例\cite{Renzo2019,5502350, liang2019large, CHN_zhou2020, CHN_zhang2017}
-
-
 
 
 \subsection{交叉引用}\label{subsec:crossref}
