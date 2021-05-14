@@ -16,6 +16,16 @@
 \usepackage[caption=false,font=footnotesize]{subfig}
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{\indent 定理}[section]
+\newtheorem{lemma}{\indent 引理}[section]
+\newtheorem{proposition}{\indent 命题}[section]
+\newtheorem{corollary}{\indent 推论}[section]
+\newtheorem{definition}{\indent 定义}[section]
+\newtheorem{example}{\indent 例}[section]
+\newtheorem{remark}{\indent 注}[section]
+\renewcommand{\proofname}{\indent\bf 证明}
 
 \begin{document}
 %生成标题页 \maketitle[可选参数]\end{document}\end{document}
@@ -172,7 +182,7 @@ Chongwen Huang等人将可重构智能表面用于多用户无线通信，他们
 此外，文中还介绍了RIS的实际能耗模型。并针对基站发射功率分配和RIS反射系数提出了两个计算效率高的算法。
 其中一种采用梯度下降方法设计，而另一种是基于分式规划方法。其中的仿真结果表明，与传统的多天线自动对焦中继相比，该系统能够获得高达300\%的能效\cite{Huang2018a}。
 
-\begin{generalfig}[htb]{智能超表面的异常反射、折射}{fig:Ris-2way}
+\begin{generalfig}[htb]{智能超表面的两大研究方向}{fig:Ris-2way}
 	\includegraphics[width=0.8\linewidth]{Figures/Ris-2way.pdf}
 \end{generalfig}
 
@@ -240,7 +250,7 @@ todo
 	\theta_{\mathrm{c}}=\arcsin \left(\pm \frac{n_{2}}{n_{1}}-\frac{\lambda_{\mathrm{o}}}{2 \pi n_{1}} \frac{d \Phi}{d x}\right)
 \end{equation}
 
-同理，由\autoref{eq:Generalized-snell-law}也可以推到出广义斯涅尔反射定律。对于反射的情况，入射波和反射波都在介质1中，所以有$n_2=n_1$，可得：
+同理，由\autoref{eq:Generalized-snell-law}也可以推导出广义斯涅尔反射定律。对于反射的情况，入射波和反射波都在介质1中，所以有$n_2=n_1$，可得：
 \begin{equation}
 	\sin \theta_2 - \sin \theta_1 = \frac{1}{k_\mathrm{o} n_1} \frac{d \Phi}{dx}
 	\label{eq:Generalized-snell-law-reflection}
@@ -257,23 +267,145 @@ todo
 	k_{x}^{(r)}-k_{x}^{(i)}=\frac{d \Phi}{d x} \\
 	k_{x}^{(t)}-k_{x}^{(i)}=\frac{d \Phi}{d x}
 \end{eqnarray}
-其中$k_{x}^{(i, r, t)}=k_{\mathrm{o}} n_{i, i, t} \sin \theta_{i, r, t}$表示平面波矢量。当$\frac{d \Phi}{d x}=0$时，即得到经典的斯涅尔定律。
+其中$k_{x}^{(i, r, t)}=k_{\mathrm{o}} n_{i, i, t} \sin \theta_{i, r, t}$表示平面波矢量。标号$i$表示入射侧的参量，标号$r$表示反射侧的参量，标号$t$表示折射侧的参量。
+当$\frac{d \Phi}{d x}=0$时，即得到经典的斯涅尔定律。
 
+广义斯涅尔定律为超表面的设计提供了理论指导，在设计超表面的过程中，我们只需要将它分解为二维亚波长单元，分析每个单元对电磁波带来的附加相位，通过对反射阵列的附加相位的设计，结合波束赋形理论，就可以实现对电磁波的灵活调控。
+
+\subsection{超表面对电磁波的调控机理}
+
+todo
 
 	
 \subsection{波束赋形理论}
 
-\subsection{本章小结}
 
-\section{建模仿真分析}\label{sec:simulation}
 
 \subsection{本章小结}
+
+本章主要介绍了
+
+\section{物理、传播和路径损耗建模}
+
+本章中，我们使用物理光学技术导出了远场路径损耗，并解释了为什么表面由许多元素组成，这些元素单独充当散射体，但可以在特定波束宽度的期望方向上联合波束形成信号。
+
+
+\subsection{无源金属表面}
+
+在这一节中，我们回顾了由有限尺寸的“无源”金属（完全导电）板散射的波形的场强和波束宽度的研究。这些结果将被用来解释智能超表面的理想工作状态。
+
+我们考虑一个尺寸为$a \times b$的厚度可以忽略的矩形完美导电板，且位于水平面上（即$\boldsymbol{e}_{x}, \boldsymbol{e}_{y}$所在平面）。一个距离为$d_i$的很远的点源辐射具有波数为$k$（$k = 2\pi / \lambda$，$\lambda$为波长）的线性极化电磁波。
+为了便于讨论，我们假设源的极化是这样的，即电场平行于$\boldsymbol{e}_{x}$，而磁场位于$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$所跨越的平面上。
+
+\begin{lemma}
+	在$\boldsymbol{e}_{y}, \boldsymbol{e}_{z}$平面内，对于任意观察角度$\theta_{s} \in\left[0, \frac{\pi}{2}\right]$（相对于$\boldsymbol{e}_{z}$），在远场观察距离$r \geq \frac{2 \max \left(a^{2}, b^{2}\right)}{\lambda}$时，分散场的平方幅度为：
+	\begin{equation}
+		S\left(r, \theta_{s}\right)=\left(\frac{a b}{\lambda}\right)^{2} \frac{E_{i}^{2}}{r^{2}} \cos ^{2}\left(\theta_{i}\right)\left(\frac{\sin \left(\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)\right)}{\frac{\pi b}{\lambda}\left(\sin \left(\theta_{s}\right)-\sin \left(\theta_{i}\right)\right)}\right)^{2}
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	这个结果来自标准的物理光学技术（忽略边缘效应）\cite{balanis2012advanced}。
+\end{proof}
+
+
+
+metal-plate
+\begin{generalfig}[htb]{入射波被金属板散射示意图}{fig:metal-plate}
+	\includegraphics[width=0.5\linewidth]{Figures/metal-plate.pdf}
+\end{generalfig}
+
+\begin{example}
+	
+\end{example}
+
+\begin{corollary}
+	
+\end{corollary}
+
+
+在这封信中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出红外反射器必须如何设计来模拟这种表面，同时控制散射波的方向性，从而填补了这一空白。这就产生了一个严格的路径损耗模型，以及一种建立可用于进一步研究的系统模型的方法。
+
+
+
+\section{系统传输建模仿真分析}\label{sec:simulation}
+
+\subsection{系统模型}
+
+考虑从单天线源到单天线目的地的通信（SISO）。确定性平坦衰落信道表示为$h_{\mathrm{sd}} \in \mathbb{C}$，目的地接收到的信号是：
+\begin{equation}
+	y=h_{\mathrm{sd}} \sqrt{p} s+n
+\end{equation}
+其中$p$是发射功率，$s$是单位功率信息信号，$n \sim \mathcal{N}_{\mathbb{C}}\left(0, \sigma^{2}\right)$是接收机噪声。为了便于分析，天线增益包含在信道中。
+该单输入单输出（SISO）信道的容量为：
+\begin{equation}
+	R_{\mathrm{SISO}}=\log _{2}\left(1+\frac{p\left|h_{\mathrm{sd}}\right|^{2}}{\sigma^{2}}\right)
+\end{equation}
+通过在通信中加入额外的设备，可以潜在地增加容量。
+
+在本章中，我们考虑两种不同的中继方式，其一为智能超表面，其二为中继器。智能超表面被配置为使反射波束指向目的地，中继器工作于经典的解码转发模式下。
+下面导出相应的可实现速率，然后通过分析进行优化，以实现公平的比较。
+然而，本章中选择的信道模型是“偏心”智能超表面的，特别是确定性平坦衰落信道的假设对于智能超表面辅助增强通信是理想的，因为它不能获取信道状态信息（Channel State Information, CSI），比中继站更不能处理信道估计和频率选择性衰落。
+
+\subsubsection{智能超表面使能的传输}
+
+如图xxxxxx(a)所示，RIS由总共由$L$个元素组成。从基站到智能超表面的确定性信道表示为$\mathbf{h}_{\mathrm{sr}} \in \mathbb{C}^{L}$，$\left[\mathbf{h}_{\mathrm{sr}}\right]_{l}$代表第$l$个结构单元的信道。从智能超表面到终端的信道表示为$\mathbf{h}_{\mathrm{rd}} \in \mathbb{C}^{L}$，每个单元的尺寸都小于入射波波长，这样可以认为\cite{emil2019intelligent}
+
+因此，它以近似恒定的增益向所有感兴趣的方向散射输入信号
+
+\begin{theorem}[勾股定理]
+    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
+\end{theorem}
+
+
+\begin{lemma}[勾股定理]
+    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
+\end{lemma}
+
+\begin{theorem}[勾股定理]
+    若 $a,b$ 为直角三角形的两条直角边，$c$ 为斜边，那么 $a^2 + b^2 + c^2.$
+\end{theorem}
+
+\begin{proof}
+    ...
+    所以：
+    \[
+        G(x, y) = G(y, x).  \qedhere
+    \]
+\end{proof}
+
+
+\subsection{分析性能比较}
+\subsection{仿真性能比较}
+\subsection{本章小结}
+
+本章
 
 \section{系统设计}\label{sec:design}
 
-\subsection{超表面单元设计}
+\subsection{智能超表面选择}
+
+本设计选用了\autoref{fig:28-GHz-RIS}所示的工作频点为28 GHz的智能超表面。
+其中\autoref{fig:28-GHz-RIS}(a)为三维仿真图，\autoref{fig:28-GHz-RIS}(b)为实物图。
+
+\begin{figure}[htb]
+	\centering
+	\subfloat[三维仿真图]{\includegraphics[width=0.5\linewidth]{Figures/data.png}}
+	\subfloat[实物图]{\includegraphics[width=0.5\linewidth]{Figures/data.png}}
+	\caption{28 GHz智能超表面}
+	\label{fig:28-GHz-RIS}
+\end{figure}
+
+它的主要优点如下：
+\begin{enumerate}
+	\item 采用xx公司的PIN二极管，可以工作
+	\item 一共由$16\times16=256$个单元，单元数量众多，且可以独立控制。
+	\item 采用模块化设计
+\end{enumerate}
 
 \subsection{控制电路设计}
+\subsubsection{bbb}
+\subsubsection{ccc}
 
 \subsection{驱动、固件设计}
 
@@ -318,38 +450,14 @@ todo
 
 \subsection{本章小结}
 
+本章
+
 \section{实验数据}\label{sec:experiment}
 \subsection{本章小结}
 \section{总结与展望}\label{sec:conclusion}
 
 \subsection{论文研究工作总结}
 \subsection{未来工作展望}
-\section{段落}
-\paragraph{段落}\label{para:para}这是一个带有顶头标签的段落这是一个带有顶头标签的段落这是一个带有顶头标签的段落这是一个带有顶头标签的段落这是一个带有顶头标签的段落这是一个带有顶头标签的段落这是一个带有顶头标签的段落
-\subparagraph{小段落}\label{subpara:subpara}只是一个带有缩进标签的段落只是一个带有缩进标签的段落只是一个带有缩进标签的段落只是一个带有缩进标签的段落只是一个带有缩进标签的段落只是一个带有缩进标签的段落只是一个带有缩进标签的段落
-\subsection{第二小节}
-本模板已经引入伪加粗和伪斜体，这样就不需要对应的粗体和斜体字体也能生成需要的效果，就像下面这样
-
-{\songti \bfseries 宋体加粗}
-
-{\songti \itshape 宋体斜体}
-
-{\songti \bfseries \itshape 宋体粗斜体}
-
-请注意，使用加粗和斜体时，请与字体名称一同使用，否则会自动将粗体匹配为黑体，斜体匹配为楷体，就像下面这样
-
-{正常显示宋体}
-
-{\bfseries 加粗后变为黑体}
-
-{\itshape 斜体后变为楷体}
-
-\subsection{第三小节}
-
-
-
-
-
 
 
 
@@ -364,8 +472,6 @@ todo
 
 \subsection{交叉引用}\label{subsec:crossref}
 本模板已经重写了hyperref宏包的\verb|\autoref|命令，方便引用章节、公式和图表。
-
-比如说\autoref{sec:ref}和\autoref{subsec:crossref}就引用了本章节，\autoref{para:para}和\autoref{subpara:subpara}引用了之前的两个段落。显然段落因为没有序号，引用结果和上一节的需要相同，因此建议使用段落“\nameref{para:para}”和段落“\nameref{subpara:subpara}”。
 
 \section{公式这么用}
 在文中引用公式可以这么写：$a^2+b^2=c^2$这是勾股定理，他还可以表示为$c=\sqrt{a^2+b^2}$，还可以让公式单独一段并且加上编号
@@ -433,51 +539,11 @@ todo
 	\includegraphics[width=0.4\linewidth]{Figures/data.png}
 \end{generalfig}
 
-同时也可以引用该图片例如：\autoref{fig:data}或者图~\ref{fig:data}。请注意generalfig第一个参数是标题，第二个参数是引用。
+同时也可以引用该图片例如：\autoref{fig:data}或者图~\ref{fig:data}、。请注意generalfig第一个参数是标题，第二个参数是引用。
 
 \newpage
 
-\subsection{表的使用}
-作为论文，推荐使用三线表进行排版。所谓三线表，即在标题前有横线，标题后有横线，表格最后还有横线，其他地方无线。当然这不是死规定，也可以根据需要在合适的地方加线。
-、踩踩踩
-本文定义了新的可变长度左中右（LCR）格式，LCR三个格式会根据表格宽度的设定自行控制宽度，且其宽度相等，方便设置和页面相同宽度的表格。但该功能需要使用tabularx做表。
-\begin{generaltab}{某校学生升高体重样本}{tab:heightweight}
-	\begin{tabularx}{\textwidth}{lCCC}
-		\toprule
-		序号 & 年龄 & 身高   & 体重  \\ \midrule
-		1    & 14   & 156    & 42    \\
-		2    & 16   & 158    & 45    \\
-		3    & 14   & 162    & 48    \\
-		4    & 15   & 163    & 50    \\
-		\cmidrule{2-4} %添加2-4列的中线
-		平均 & 15   & 159.75 & 46.25 \\ \bottomrule
-	\end{tabularx}
-\end{generaltab}
 
-当然你也可以引用表格，就像这样：\autoref{tab:heightweight}。
-
-\section{列表的使用}
-这是一个计数的列表
-\begin{enumerate}
-	\item 第一项
-	      \begin{enumerate}
-		      \item 第一项中的第一项
-		      \item 第一项中的第二项
-	      \end{enumerate}
-	\item 第二项
-	\item 第三项
-\end{enumerate}
-
-这是一个不计数的列表
-\begin{itemize}
-	\item 第一项
-	      \begin{itemize}
-		      \item 第一项中的第一项
-		      \item 第一项中的第二项
-	      \end{itemize}
-	\item 第二项
-	\item 第三项
-\end{itemize}
 
 \begin{thankpage}
 	
@@ -485,12 +551,9 @@ todo
 		{\itshape “满纸荒唐言，一把辛酸泪。”}
 	\end{center}
 	
+	%{\itshape “文章本天成，妙手偶得之。”}
 
-
-
-	{\itshape “文章本天成，妙手偶得之。”}
-
-	{\itshape “朝发鸡鸣未响，归路晚风凉。汗洒澄池桃李，几度银杏黄。”}
+	%{\itshape “朝发鸡鸣未响，归路晚风凉。汗洒澄池桃李，几度银杏黄。”}
 
 	\begin{figure}[htb]
 		\flushright
@@ -511,12 +574,6 @@ todo
 
 \begin{appendices}
 	\section{系统电路原理图}
-	\section{这是第一个附录}
-	这里是附录环境，其中的section、subsection、subsubsection已经变为附录的样式，并且会以这种样式加入目录中。
-	\subsection{附录可以有小节}
-	\subsubsection{附录中也可以有小小节}\label{apxsubsubsec:appendix}
-	\subsubsubsection{附录中也有小小小节}
-	\verb|\autoref|无法识别Appendices环境，引用效果和正文一样，如\autoref{apxsubsubsec:appendix}。所以如果引用附录的话，建议直接使用附录~\ref{apxsubsubsec:appendix}。
 \end{appendices}
 
 \end{document}
