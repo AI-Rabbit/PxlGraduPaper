@@ -428,9 +428,9 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 	y=\left(\sqrt{\beta_{\mathrm{IRS}}^{s}} \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}}+\sqrt{\beta_{\mathrm{sd}}} e^{j \phi_{\mathrm{sd}}}\right) x+n
 \end{equation}
 
+\subsection{本章小结}
+
 在这封信中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出红外反射器必须如何设计来模拟这种表面，同时控制散射波的方向性，从而填补了这一空白。这就产生了一个严格的路径损耗模型，以及一种建立可用于进一步研究的系统模型的方法。
-
-
 
 \section{系统传输建模仿真分析}\label{sec:simulation}
 
@@ -513,7 +513,7 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 未选通的行的MOS管关断，控制电压由RIS单元对应的保持电容保持。
 需要注意的是，控制器需要对RIS面板定时刷新，使保持电容的电压维持在较为稳定的水平。
 
-\begin{generalfig}[htb]{基于行列扫描的智能超表面的某个单元}{fig:MOS-single}
+\begin{generalfig}[htb]{基于行列扫描的智能超表面单元}{fig:MOS-single}
 	\includegraphics[width=0.4\linewidth]{Figures/MOS-single.pdf}
 \end{generalfig}
 
@@ -553,7 +553,7 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \autoref{fig:Amp}所示为第1行第1列一个RIS单元及采样保持装置的改进结构。
 其中场效应管$T_1$的栅极接扫描线$G_1$，源极接信号线$S_1$，漏极接保持电容$C_1$，并连接到运算放大器$A_1$的同向输入端，运算放大器处于单位跟随状态，输出接RIS单元，同时接反向输入端。
 
-\begin{generalfig}[htb]{基于行列扫描的智能超表面的某个单元}{fig:Amp}
+\begin{generalfig}[htb]{带采样保持器的智能超表面单元}{fig:Amp}
 	\includegraphics[width=0.5\linewidth]{Figures/Amp.pdf}
 \end{generalfig}
 
@@ -561,14 +561,45 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 关断时间内，场效应管处于关断状态，由于运算放大器的输入电阻很大，用这种方法可以保持更长时间，且不受RIS单元阻抗的影响。
 这种改进电路降低刷新频率，提高稳定性，并且由于运算放大器的输出驱动能力较强，这种电路结构可以驱动阻抗小的RIS单元。
 
+使用行列扫描控制方法可以IO口的数量得到锐减，1 bit控制时容易得出以下的结论：
+\begin{enumerate}
+	\item 若扫描线驱动电路一对一接入控制器，则一共需要$M+N$个IO口；
+	\item 若扫描线驱动电路采用译码逻辑电路，则一共需要$\log_{2}{M}+N$个IO口；
+	\item 若扫描线驱动电路采用移位寄存器电路，则一共需要$N+1$个IO口。
+\end{enumerate}
+
 \subsubsection{移位寄存器控制方法}
 
+行列控制可以大大减少IO口数量，但白璧微瑕，这种方案需要对智能超表面定时刷新。所以，本小节提出了一种使用移位寄存器的控制方法，无需刷新就可以稳定地保持电平，在原理上更为简单。
+移位寄存器是一种数字电路类型，使用多个触发器级联构成，其中一个触发器的输出连接到下一个触发器。
+它们共享单个时钟信号，时钟触发会导致系统中存储的数据从一个位置转移到下一个位置。
 
+\begin{generalfig}[htb]{4位的串入并出移位寄存器}{fig:4-Bit_SIPO_Shift_Register}
+	\includegraphics[width=0.8\linewidth]{Figures/4-Bit_SIPO_Shift_Register.pdf}
+\end{generalfig}
+
+\autoref{fig:4-Bit_SIPO_Shift_Register}为串入并出形式的移位寄存器接法，可以将输入的串行数据以并行格式输出。串行通信要求的几位数据完成输入之后，就可以在输出端的各位同时读出并行数据。
+在这种配置中，每个触发器是边沿触发。所有触发器都以给定的时钟频率运行。每个输入位在$n$个时钟周期后将移动到第$n$个触发器的输出端，导致并行输出。
+
+使用$a~\mathrm{bit}$的移位寄存器，$b$个级联作为一组控制，对于一个$M$行$N$列的智能超表面，需要的控制引脚数约为$\frac{MN}{ab}$。由此可见，这也是一种差强人意的控制方法。
 
 \subsubsection{智能超表面控制电路}
 
+权衡上述方法的利弊，最终选用移位寄存器控制方法制作智能超表面的控制电路。
+在数据更新过程中，我们希望串行数据加载过程中并行输出不应改变，故需要使用锁存或缓冲输出。
+在带输出锁存的移位寄存器中，串行数据首先加载到内部缓冲寄存器中，然后在接收到输出加载信号时，将缓冲寄存器的状态复制到一组输出寄存器中。
+
+本设计选用了安世半导体（nexperia）生产的型号为74HC595D\footnote{详细信息和数据手册请参考 https://www.nexperia.cn/product/74HC595D 。}的移位寄存器。
+它是具有存储寄存器和三态输出的8位串行至并行移位寄存器。
+其中移位操作和存储寄存器都具有单独的时钟，并且该器件具有串行输入（DS）和串行输出（Q7S），以实现级联和异步重置，满足本设计的需求。
+
+
+
 \subsection{驱动、固件设计}
 
+\subsubsection{设计思路}
+
+\subsubsection{实现细节}
 
 \subsection{码本设计}
 
@@ -687,7 +718,7 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \bibliography{Bibs/references_Gradu}
 
 \begin{appendices}
-	\section{系统电路原理图}
+	\section{控制电路原理图}
 \end{appendices}
 
 \end{document}
