@@ -550,6 +550,7 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \end{equation}
 
 然而对于驱动PIN二极管使能的超表面单元来说，\autoref{eq:C1_value}可能是无解的，这是因为包含PIN二极管的单元的导通电阻$R_\mathrm{RIS}$太小，这时候需要对\autoref{fig:MOS-single}中的电路结构进行改进。
+
 \autoref{fig:Amp}所示为第1行第1列一个RIS单元及采样保持装置的改进结构。
 其中场效应管$T_1$的栅极接扫描线$G_1$，源极接信号线$S_1$，漏极接保持电容$C_1$，并连接到运算放大器$A_1$的同向输入端，运算放大器处于单位跟随状态，输出接RIS单元，同时接反向输入端。
 
@@ -581,21 +582,59 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \autoref{fig:4-Bit_SIPO_Shift_Register}为串入并出形式的移位寄存器接法，可以将输入的串行数据以并行格式输出。串行通信要求的几位数据完成输入之后，就可以在输出端的各位同时读出并行数据。
 在这种配置中，每个触发器是边沿触发。所有触发器都以给定的时钟频率运行。每个输入位在$n$个时钟周期后将移动到第$n$个触发器的输出端，导致并行输出。
 
-使用$a~\mathrm{bit}$的移位寄存器，$b$个级联作为一组控制，对于一个$M$行$N$列的智能超表面，需要的控制引脚数约为$\frac{MN}{ab}$。由此可见，这也是一种差强人意的控制方法。
+若使用$a~\mathrm{bit}$的移位寄存器，$b$个级联作为一组控制，对于一个$M$行$N$列的智能超表面，需要的控制引脚数约为$\frac{MN}{ab}$。由此可见，这也是一种差强人意的控制方法。
 
 \subsubsection{智能超表面控制电路}
+
+本小节详细阐述智能超表面控制电路：首先对两种方案进行比较选择，其次给出控制电路的总体设计，然后描述各个部分的设计细节，最后给出设计结果。
+
+\subsubsubsection{方案选择}
 
 权衡上述方法的利弊，最终选用移位寄存器控制方法制作智能超表面的控制电路。
 在数据更新过程中，我们希望串行数据加载过程中并行输出不应改变，故需要使用锁存或缓冲输出。
 在带输出锁存的移位寄存器中，串行数据首先加载到内部缓冲寄存器中，然后在接收到输出加载信号时，将缓冲寄存器的状态复制到一组输出寄存器中。
 
+\begin{generalfig}[htb]{74HC595D逻辑图}{fig:Logic-diagram}
+	\includegraphics[width=0.8\linewidth]{Figures/Logic-diagram.pdf}
+\end{generalfig}
+
 本设计选用了安世半导体（nexperia）生产的型号为74HC595D\footnote{详细信息和数据手册请参考 https://www.nexperia.cn/product/74HC595D 。}的移位寄存器。
+\autoref{fig:Logic-diagram}为其内部逻辑图。
 它是具有存储寄存器和三态输出的8位串行至并行移位寄存器。
 其中移位操作和存储寄存器都具有单独的时钟，并且该器件具有串行输入（DS）和串行输出（Q7S），以实现级联和异步重置，满足本设计的需求。
 
-考虑到所选的智能超表面一共有$16\times16=256$个控制信号，综合考虑控制速度和硬件复杂度，选用两片74HC595级联作为一组
+\subsubsubsection{总体设计}
+
+考虑到所选的智能超表面一共需要$16\times16=256$个控制信号。
+综合比较控制速度和硬件复杂度，选用两片74HC595D级联作为一组，一共16组的方案控制RIS。
+为了使控制电路也能模块化组装，在设计时保持了智能超表面和控制电路的机械尺寸一致。
+
+\begin{generalfig}[htb]{控制电路系统框图}{fig:CCB-diagram}
+	\includegraphics[width=0.8\linewidth]{Figures/CCB-diagram.pdf}
+\end{generalfig}
+
+控制电路的系统框图如\autoref{fig:CCB-diagram}所示，包括电源、移位寄存器、网络排阻几部分。
+
+
+假设28 GHz RIS中的PIN二极管导通时的电流为$I_{work}$，供电电压为$U_{work}$，考虑极端情况，即所有单元均处于导通状态，此时RIS的总电流为：
+\begin{equation}
+	I_{total}=MNI_{work}
+\end{equation}
+总功耗为：
+\begin{equation}
+	P_{total}=U_{work}I_{total}=MNU_{work}I_{work}
+\end{equation}
+带入$M=N=16,I_{work}=4\,\mathrm{mA}, U_{work}=3.3\, \mathrm{V}$，可得：$I_{total}=1024 \, \mathrm{mA},P_{total}=3.38\,\mathrm{W}$。
+由此可见
+
 
 \subsection{驱动、固件设计}
+
+\autoref{fig:Timing-diagram}为74HC595D的时序图。
+
+\begin{generalfig}[htb]{74HC595D时序图}{fig:Timing-diagram}
+	\includegraphics[width=0.8\linewidth]{Figures/Timing-diagram.pdf}
+\end{generalfig}
 
 \subsubsection{设计思路}
 
