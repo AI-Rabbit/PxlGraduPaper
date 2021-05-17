@@ -17,6 +17,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{amsthm}
+\usepackage{color}
 
 \newtheorem{theorem}{\indent 定理}[section]
 \newtheorem{lemma}{\indent 引理}[section]
@@ -590,31 +591,30 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 
 \subsubsubsection{方案选择}
 
-权衡上述方法的利弊，最终选用移位寄存器控制方法制作智能超表面的控制电路。
+权衡上述方法的利弊，最终选用移位寄存器控制方法制作智能超表面的控制电路，以获得更良好的系统稳定性。
 在数据更新过程中，我们希望串行数据加载过程中并行输出不应改变，故需要使用锁存或缓冲输出。
-在带输出锁存的移位寄存器中，串行数据首先加载到内部缓冲寄存器中，然后在接收到输出加载信号时，将缓冲寄存器的状态复制到一组输出寄存器中。
+如\autoref{fig:Logic-diagram}所示，在带输出锁存的移位寄存器中，串行数据首先加载到内部缓冲寄存器中，然后在接收到输出加载信号时，将缓冲寄存器的状态复制到一组输出寄存器中。
 
-\begin{generalfig}[htb]{74HC595D逻辑图}{fig:Logic-diagram}
+\begin{generalfig}[htb]{带输出锁存的移位寄存器逻辑图}{fig:Logic-diagram}
 	\includegraphics[width=0.8\linewidth]{Figures/Logic-diagram.pdf}
 \end{generalfig}
-
-本设计选用了安世半导体（nexperia）生产的型号为74HC595D\footnote{详细信息和数据手册请参考 https://www.nexperia.cn/product/74HC595D 。}的移位寄存器。
-\autoref{fig:Logic-diagram}为其内部逻辑图。
-它是具有存储寄存器和三态输出的8位串行至并行移位寄存器。
-其中移位操作和存储寄存器都具有单独的时钟，并且该器件具有串行输入（DS）和串行输出（Q7S），以实现级联和异步重置，满足本设计的需求。
 
 \subsubsubsection{总体设计}
 
 考虑到所选的智能超表面一共需要$16\times16=256$个控制信号。
-综合比较控制速度和硬件复杂度，选用两片74HC595D级联作为一组，一共16组的方案控制RIS。
+综合比较控制速度和硬件复杂度，选用两片移位寄存器级联作为一组，一共16组的方案控制RIS。
 为了使控制电路也能模块化组装，在设计时保持了智能超表面和控制电路的机械尺寸一致。
 
 \begin{generalfig}[htb]{控制电路系统框图}{fig:CCB-diagram}
 	\includegraphics[width=0.8\linewidth]{Figures/CCB-diagram.pdf}
 \end{generalfig}
 
-控制电路的系统框图如\autoref{fig:CCB-diagram}所示，包括电源、移位寄存器、网络排阻几部分。
+控制电路的系统框图如\autoref{fig:CCB-diagram}所示，包括电源、移位寄存器和网络排阻几部分。
+其中，电源采用低压差线性稳压器（Low-dropout regulator, LDO），以提供相较开关电源纹波更低、噪声更小的输出。
+移位寄存器具有将串行信号转为并行信号的作用，图中的移位寄存器共用时钟信号，同步输出。
+由于工作时PIN二极管处于导通状态，需要串联网络排阻将电流限制在4 mA左右。
 
+\subsubsubsection{电源管理}
 
 假设28 GHz RIS中的PIN二极管导通时的电流为$I_{work}$，供电电压为$U_{work}$，考虑极端情况，即所有单元均处于导通状态，此时RIS的总电流为：
 \begin{equation}
@@ -625,20 +625,73 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 	P_{total}=U_{work}I_{total}=MNU_{work}I_{work}
 \end{equation}
 带入$M=N=16,I_{work}=4\,\mathrm{mA}, U_{work}=3.3\, \mathrm{V}$，可得：$I_{total}=1024 \, \mathrm{mA},P_{total}=3.38\,\mathrm{W}$。
-由此可见
+由此可见，至少需要使用输出电流能力1.5 A的LDO芯片。
 
+为保证设计的通用性，使用DC插座输入5 V直流电压，该电压作为后续LDO芯片的输入。
+LDO芯片选用TPS7A7001\footnote{详细信息和数据手册请参考 https://www.ti.com.cn/product/cn/TPS7A7001 。}，它是德州仪器（Texas Instruments）公司生产的一款高性能、正电压、低压降稳压器，专为 要求在高达2 A的电流下拥有超低输入电压和超低压降的应用而设计。
+该器件支持低至1.425 V的单输入电压，输出电压最低可通过编程设定为0.5 V。
+输出电压可使用外部电阻分压器进行设置。TPS7A7001具有超低压降，非常适用于输出电压与输入电压极为接近的应用。
+此外，TPS7A7001还具有使能引脚以便在关断模式下进一步降低功率耗散。
+
+\begin{generalfig}[htb]{TPS7A7001应用电路图}{fig:TPS7A7001}
+	\includegraphics[width=0.6\linewidth]{Figures/TPS7A7001.pdf}
+\end{generalfig}
+
+如\autoref{fig:TPS7A7001}所示，为了使LDO稳定工作，需要选取合适的输入电容$C_\mathrm{IN}=22\,\mathrm{\mu F}$和输出电容$C_\mathrm{OUT}=100\,\mathrm{\mu F}$。
+FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$的值确定如下：
+\begin{equation}
+	V_\mathrm{OUT} = 0.5 \times \left(1+\frac{R_1}{R_2}\right)  
+	\label{eq:TPS7A7001}
+\end{equation}
+反之，可以通过\autoref{eq:TPS7A7001}和需要的输出电压$V_\mathrm{OUT}$来计算$R_1$和$R_2$的值。本设计中$V_\mathrm{OUT} = 3.3 \, \mathrm{V}$，在E96系列电阻中尝试，选用$R_1=169\, \mathrm{k}\Omega , R_2=30.1\, \mathrm{k}\Omega $，满足设计要求。
+
+\subsubsubsection{串并转换}
+
+本设计选用了安世半导体（nexperia）生产的型号为74LVC595ABQ\footnote{详细信息和数据手册请参考 https://www.nexperia.cn/product/74LVC595ABQ 。}的移位寄存器。
+它是具有存储寄存器和三态输出的8位串行至并行移位寄存器。
+其中移位操作和存储寄存器都具有单独的时钟，并且该器件具有串行输入（DS）和串行输出（Q7S），以实现级联和异步重置，满足本设计的需求。
+
+对于级联应用而言，在第一个时钟上升沿DS输入的“引脚电平值”，需要在第8个时钟上升沿时刻时，被移位至第一片74LVC595ABQ的第8位的寄存器中；
+在第9个时钟上升沿时刻，该“值”需要被推移至下一片级联的74LVC595ABQ的第一位寄存器中。
+这样，就需要在第9个SHCP上升沿之前，将该“值”呈现在第二片的DS引脚上，并等待第9个SHCP上升沿时刻的到来。
+74LVC595ABQ逻辑门的处理方法是引入Q7S这个引脚，在第8个SHCP时刻后，将该值呈现在第二片的DS引脚上。如\autoref{fig:Timing-diagram}所示为74LVC595ABQ的时序图。
+因此，若要实现74LVC595ABQ串并转换的级联扩展，只需将数据DATA信号连接至第一片74LVC595ABQ的DS引脚，并将第一片74LVC595ABQ的Q7S输出连接至第二片74LVC595ABQ的DS引脚，依次类推。
+而各74LVC595ABQ的SHCP，STCP信号连接至统一的信号端。
+\autoref{fig:2shift}为典型的二级74LVC595ABQ级联电路示意图，它能够将FPGA输出的串行信号转化16路并行信号，相当于实现了FPGA引脚的拓展，减小了系统对FPGA本身引脚数量的需求。
+
+\begin{generalfig}[htb]{两片8位移位寄存器级联原理图}{fig:2shift}
+	\includegraphics[width=0.8\linewidth]{Figures/2shift.pdf}
+\end{generalfig}
+
+在3.3 V供电条件下，74LVC595ABQ可以在180 MHz的时钟速率下运行。由于没有进行等长布线，为了约束时序并保持信号完整性，将时钟频率设为$f_{clk}=50 \,\mathrm{MHz}$，则刷新一次的时间$T=16/f_{clk}=0.32 \,\mathrm{\mu s}$，可以实现实时调控的目标。
+
+\subsubsubsection{小结}
+
+本小节详细描述了智能超表面控制电路的设计，为了增强FPGA IO引脚的驱动能力，驱动电路还采用了缓冲芯片SN74LVC2T45\footnote{详细信息和数据手册请参考 https://www.ti.com.cn/product/cn/SN74LVC2T45 。}、时钟分配芯片CDCLVC1104\footnote{详细信息和数据手册请参考 https://www.ti.com.cn/product/cn/CDCLVC1104 。}，这里不再展开叙述。
+
+控制电路的原理图详见附录~\ref{sec:schdoc}，\autoref{fig:CCB_3D}为其三维仿真图。
+
+\begin{generalfig}[htb]{控制电路三维图}{fig:CCB_3D}
+	\includegraphics[width=0.8\linewidth]{Figures/CCB_3D.pdf}
+\end{generalfig}
 
 \subsection{驱动、固件设计}
 
-\autoref{fig:Timing-diagram}为74HC595D的时序图。
-
-\begin{generalfig}[htb]{74HC595D时序图}{fig:Timing-diagram}
-	\includegraphics[width=0.8\linewidth]{Figures/Timing-diagram.pdf}
-\end{generalfig}
+本小节将详述智能超表面驱动、固件的设计。
 
 \subsubsection{设计思路}
 
+\autoref{fig:Timing-diagram}为74LVC595ABQ的时序图。
+
+\begin{generalfig}[htb]{74LVC595ABQ时序图}{fig:Timing-diagram}
+	\includegraphics[width=0.8\linewidth]{Figures/Timing-diagram.pdf}
+\end{generalfig}
+
+
+
 \subsubsection{实现细节}
+
+考虑到底层的控制逻辑需要并行输出，顶层又需要做算法的执行和无线通信，所以选择了
 
 \subsection{码本设计}
 
@@ -648,6 +701,8 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 本章
 
 \section{总结与展望}\label{sec:conclusion}
+
+毕业设计主要内容到这里就告一段落了，下面总结一下这几个月来的研究工作和未来研究生阶段的展望
 
 \subsection{论文研究工作总结}
 
@@ -679,68 +734,25 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \end{eqnarray}
 以上
 
-\section{用图和表的示例}
-\subsection{图的使用}
-\XeLaTeX 环境下可以使用EPS、PDF、PNG、JPEG、BMP格式的图片，当然也可以用绘图包直接在\LaTeX 中绘制图形，推荐使用宏包tikz。图的环境是figure，但figure环境使用复杂且不自带标题，因此本模板定义了一个通用版本的generalfig，该环境会将figure内的图片居中并设置标签与引用名，同时会让图片位置设置为所有可行位置（htbp，即此处、页顶、页底、独立一页），此选项可以作为可选参数设置。
-
-其使用方法如下：\autoref{fig:50mcopper}
-
-
-\autoref{fig:50mtest}
-
-\ref{fig:50mcopper}
-
-\ref{fig:50mtest}
-
-\begin{figure}[t!]
-	\centering
-	\subfloat[df哈哈]{\includegraphics[width=0.5\linewidth]{Figures/data.png}%
-		\label{fig:50mphoto}}
-	\hfil
-	\subfloat[dd]{\includegraphics[width=0.5\linewidth]{Figures/data.png}%
-		\label{fig:copper}}
-	\hfil
-	\subfloat[fs]{\includegraphics[width=0.5\linewidth]{Figures/data.png}%
-		\label{fig:50mgreedy}}
-	\hfil
-	\subfloat[dfdf]{\includegraphics[width=0.5\linewidth]{Figures/data.png}%
-		\label{fig:50mcopper}}
-	\caption{The 50 m outdoor over-the-air test: (a) the scene of the transmitter and receiver; (b) a copper plate of the same size as the RIS; (c) spectrum when using the RIS; (d) spectrum when using the copper plate.}
-	\label{fig:50mtest}
-\end{figure}
-
-\begin{figure}[htb]
-	\centering
-	\includegraphics[width=0.5\linewidth]{Figures/data.png}
-	\caption{Indoor non-LoS test.}
-	\label{fig:through_wall}
-\end{figure}
-
-\begin{generalfig}[htb]{大数据信息处理框架}{fig:data}
-	\includegraphics[width=0.4\linewidth]{Figures/data.png}
-\end{generalfig}
-
-同时也可以引用该图片例如：\autoref{fig:data}或者图~\ref{fig:data}、。请注意generalfig第一个参数是标题，第二个参数是引用。
-
-\newpage
-
 
 
 \begin{thankpage}
 	
-	\begin{center}
-		{\itshape “满纸荒唐言，一把辛酸泪。”}
-	\end{center}
-	
+
+
 	\LaTeX
 
 	% 离家求学三年有余，却始终放不下对故乡的思念，“城中桃李愁风雨，春在溪头荠菜花。”
 
 	%{\itshape “流光容易把人抛，红了樱桃，绿了芭蕉。”}
 	%{\itshape “文章本天成，妙手偶得之。”}
-
+	%{\itshape “点金石声声教诲，胸成竹字字清辉。”}
 	%{\itshape “朝发鸡鸣未响，归路晚风凉。汗洒澄池桃李，几度银杏黄。”}
 
+	\begin{center}
+		\textcolor{white}{\itshape “满纸荒唐言，一把辛酸泪。都云作者痴，谁解其中味？”}
+	\end{center}
+	
 	\begin{figure}[htb]
 		\flushright
 		\includegraphics[width=15mm]{Figures/Seal-pxl.pdf}
@@ -759,7 +771,17 @@ $U_1$为设计的RIS单元，与它并联的是一个保持电容$C_1$。
 \bibliography{Bibs/references_Gradu}
 
 \begin{appendices}
-	\section{控制电路原理图}
+
+	\section{控制电路原理图}\label{sec:schdoc}
+
+	\begin{generalfig}[htb]{原理图1}{fig:schdoc_1}
+		\includegraphics[width=\linewidth]{Figures/schdoc_1.pdf}
+	\end{generalfig}
+
+	\begin{generalfig}[htb]{原理图2}{fig:schdoc_2}
+		\includegraphics[width=\linewidth]{Figures/schdoc_2.pdf}
+	\end{generalfig}
+
 \end{appendices}
 
 \end{document}
