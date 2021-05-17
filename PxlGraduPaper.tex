@@ -275,8 +275,10 @@ todo
 
 \subsection{超表面对电磁波的调控机理}
 
-todo
+文献\normalcite{Chen2018dian}中研究了透射式智能超表面对电磁波的调控机理。
+本小节基于此，推导出反射式超表面对电磁波的调控机理。
 
+todo
 
 
 \subsection{本章小结}
@@ -422,20 +424,24 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 \subsubsection{智能超表面的散射体阵列模型}
 
-\subsubsection{智能超表面的传输系统模型}
-
-考虑直射径下发射机和接收机之间的信道为$\sqrt{\beta_{\mathrm{sd}}} e^{j \phi_{\mathrm{sd}}}$，囊括智能超表面的反射路径，接收信号可以表示为：
+如上所述，大小为$a \times b$的智能超表面由许多小于$\lambda$的表面元素组成，假设每个单元的大小为$\frac{a}{N_a} \times \frac{b}{N_b}$。则发射机和接收机通过第$n$个单元的路径损耗可以表述为：
 \begin{equation}
-	y=\left(\sqrt{\beta_{\mathrm{IRS}}^{s}} \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}}+\sqrt{\beta_{\mathrm{sd}}} e^{j \phi_{\mathrm{sd}}}\right) x+n
+	\beta_{\mathrm{IRS}}^{s}\left(r, d_{i}, \theta_{r}\right)=\frac{G_{t} G_{r}}{(4 \pi)^{2}}\left(\frac{a b}{N_{a} N_{b} d_{i} r}\right)^{2} \cos ^{2}\left(\theta_{i}\right)
 \end{equation}
+由于假设的是远场的情况，所以$\beta_{\mathrm{IRS}}^{s}\left(r, d_{i}, \theta_{r}\right)$对所有单元来说都是一样的。
+根据\autoref{eq:Multiple-Metallic-Surfaces}，如果所有$N=N_a N_b$个单元相干增强，则发射机和接收机之间通过整个智能超表面的路径损耗为：
+\begin{equation}
+	\left(N \sqrt{\beta_{\mathrm{IRS}}^{s}\left(r, d_{i}, \theta_{r}\right)}\right)^{2}=\beta_{\mathrm{IRS}}\left(r, d_{i}, \theta_{s}\right)
+\end{equation}
+因此，我们可以将智能超表面解释为一组特殊的散射体。这些散射体在接收器处对其反射信号进行相位校准，实现相干增强，从而实现“异常”反射。
 
 \subsection{本章小结}
 
-在这封信中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出红外反射器必须如何设计来模拟这种表面，同时控制散射波的方向性，从而填补了这一空白。这就产生了一个严格的路径损耗模型，以及一种建立可用于进一步研究的系统模型的方法。
+在本章中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
 
 \section{系统传输建模仿真分析}\label{sec:simulation}
 
-\subsection{系统模型}
+\subsection{系统传输模型}
 
 考虑从单天线源到单天线目的地的通信（SISO）。确定性平坦衰落信道表示为$h_{\mathrm{sd}} \in \mathbb{C}$，目的地接收到的信号是：
 \begin{equation}
@@ -668,12 +674,16 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 \subsubsubsection{小结}
 
 本小节详细描述了智能超表面控制电路的设计，为了增强FPGA IO引脚的驱动能力，驱动电路还采用了缓冲芯片SN74LVC2T45\footnote{详细信息和数据手册请参考 https://www.ti.com.cn/product/cn/SN74LVC2T45 。}、时钟分配芯片CDCLVC1104\footnote{详细信息和数据手册请参考 https://www.ti.com.cn/product/cn/CDCLVC1104 。}，这里不再展开叙述。
+控制电路的原理图详见附录~\ref{sec:schdoc}，\autoref{fig:CCB_ALL}(a)为其三维仿真图，\autoref{fig:CCB_ALL}(b)为其实物图。
 
-控制电路的原理图详见附录~\ref{sec:schdoc}，\autoref{fig:CCB_3D}为其三维仿真图。
-
-\begin{generalfig}[htb]{控制电路三维图}{fig:CCB_3D}
-	\includegraphics[width=0.8\linewidth]{Figures/CCB_3D.pdf}
-\end{generalfig}
+\begin{figure}[htb]
+	\centering
+	\subfloat[三维仿真图]{\includegraphics[width=0.4\linewidth]{Figures/CCB_3D.pdf}}
+	\hfil
+	\subfloat[实物图]{\includegraphics[width=0.4\linewidth]{Figures/CCB_3D.pdf}}
+	\caption{智能超表面控制电路}
+	\label{fig:CCB_ALL}
+\end{figure}
 
 \subsection{驱动、固件设计}
 
@@ -691,7 +701,15 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 
 \subsubsection{实现细节}
 
-考虑到底层的控制逻辑需要并行输出，顶层又需要做算法的执行和无线通信，所以选择了
+考虑到底层的控制逻辑需要并行输出，顶层又需要做算法的执行和无线通信，所以选择了赛灵思公司的Zynq$^\circledR$-7000 SoC\footnote{详细介绍可参考 https://china.xilinx.com/products/silicon-devices/soc/zynq-7000.html 。}作为主控制器。
+本系列处理器集成了ARM$^\circledR$处理器的软件可编程性与Xilinx FPGA的硬件可编程性，不仅可实现重要分析与硬件加速，同时还在单个器件上高度集成 CPU、DSP、ASSP以及混合信号功能。
+其框图如\autoref{fig:zynq-7000}所示，该FPGA PS部分具有两个ARM Cortex-A9高性能应用级ARM处理器，PL部分有171.9 k个LUT，343.8 k个触发器，并且有1 GB DDR3 SDRAM，4 GB eMMC，满足设计需求。	
+
+\begin{generalfig}[htb]{Zynq-7000 SoC框图}{fig:zynq-7000}
+	\includegraphics[width=0.8\linewidth]{Figures/zynq-7000.pdf}
+\end{generalfig}
+
+
 
 \subsection{码本设计}
 
@@ -699,6 +717,195 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 \subsection{本章小结}
 
 本章
+
+\section{系统调试}
+
+\subsection{FPGA开发流程}
+
+\subsubsection{开发流程重要步骤说明与图示}
+
+\subsubsubsection{新建工程}
+进入Vivado开发平台后，首先点击新建工程，如\autoref{fig:NewProject}所示。
+
+\begin{generalfig}[htb]{新建工程}{fig:NewProject}
+	\includegraphics[width=12cm]{Figures/NewProject.png}
+\end{generalfig}
+
+
+确定工程的名字和路径之后，下一步是器件选型，本课程设计选用的FPGA型号为Zynq-7020，因此芯片型号为xc7z020clg400-2，如\autoref{fig:PartChoose}所示。
+
+\begin{generalfig}[htb]{器件选型}{fig:PartChoose}
+	\includegraphics[width=12cm]{Figures/PartChoose.png}
+\end{generalfig}
+
+配置好器件型号之后，即完成了工程的创建，如\autoref{fig:FinishCreate}所示。
+
+\begin{generalfig}[htb]{完成创建}{fig:FinishCreate}
+	\includegraphics[width=12cm]{Figures/FinishCreate.png}
+\end{generalfig}
+
+\subsubsubsection{新建文件}
+进入新的Vivado工程之后，我们选择添加Block Design，因为本系统是软硬件协同的，需要用到处理器，因此选用Block Design模块化设计，如\autoref{fig:CreateBlockDesign}所示。
+
+\begin{generalfig}[htb]{添加Block Design}{fig:CreateBlockDesign}
+	\includegraphics[width=8cm]{Figures/CreateBlockDesign.png}
+\end{generalfig}
+
+
+
+添加好之后即添加IP、配置IP并连线、输出等等，完成后的设计图在上文中提到。选择让Vivado自动生成顶层Verilog代码，即可完成硬件部分的逻辑设计，顶层Wrapper将会自动生成。
+
+\subsubsubsection{功能仿真}
+在设计每一个模块时，需要对模块进行功能仿真，Xilinx的Vivado平台自带仿真系统，也可以使用业界常用的Modelsim进行仿真。本设计使用Vivado进行综合前仿真，以验证功能正确性。
+
+编写testbench时，使用DDS（Direct Digital Synthesis，直接数字频率合成）生成模拟的正弦信号作为仿真信号源给状态机进行仿真。仿真模块实例化触发状态机以及FIFO，DMA部分由于缺少与处理器的交互没有加入仿真验证。经过修改验证，得到如\autoref{fig:VivadoSim}所示的正确的仿真波形。
+
+\begin{generalfig}[htb]{Vivado功能仿真}{fig:VivadoSim}
+	\includegraphics[width=12cm]{Figures/VivadoSim.png}
+\end{generalfig}	
+
+\subsubsubsection{引脚约束}
+
+使用直接编写约束文件的方式，能大大提高开发效率，因为可以通过模板来快速编写约束文件，如\autoref{fig:XDCFile}所示为节选的约束文件。
+
+\begin{generalfig}[htb]{引脚约束文件}{fig:XDCFile}
+	\includegraphics[width=8cm]{Figures/XDCFile.png}
+\end{generalfig}
+
+\subsubsubsection{时序约束}
+
+使用Vivado进行开发时，一般的时序约束方法有三种。
+
+{\songti \bfseries 方法1：自动创建基时钟和 PLL 输出时钟}
+
+
+这一方法能够自动地约束PLL的输入和输出时钟。ALTPLL mega function 中指定的所有 PLL 参数都用于约束 PLL 的输入和输出时钟。自动更新了 ALTPLL mega function的修改。当创建 PLL 的输入和输出时钟时，不必跟踪 PLL 参数的更改或指定正确的值。为了自动约束所有输入和输出，要将 derive\_pll\_clocks 命令和 -create\_base\_clocks选项一起使用。
+
+{\songti \bfseries 方法2：手动创建基时钟和自动创建 PLL 输出时钟}
+
+
+通过这种方法, 可以手动约束 PLL 的输入时钟并且使 TimeQuest analyzer 能够自动约束 PLL 的输出时钟。除此之外，与ALTPLL mega function 中指定的输入时钟频率相反，可以指定一个不同的输入时钟频率。通过使用 ALTPLL mega function 中指定的参数自动创建 PLL 输出时钟。
+
+{\songti \bfseries 方法3：手动创建基时钟和 PLL 输出时钟}
+
+
+通过这种方法，可以手动约束 PLL 的输入时钟和输出时钟。指定了所有的 PLL 参数并且参数值可以不同于 ALTPLL mega function 中指定的参数值。除此之外，可以尝试各种 PLL 输入和输出频率以及参数。也可以将该方法与 create\_clock 和 create\_generate\_clock 命令的组合一起使用。
+由于软硬件协同设计中，PL部分的时钟由PS内的锁相环提供，因此无需在约束文件中对PL时钟做过多约束。
+
+
+\subsubsubsection{综合RTL电路图}
+
+设计完成后，便可以进行综合，如果需要在线调试，还需要在综合结束之后进行配置以形成ILA。\autoref{fig:RTLFigure}是设计综合后的RTL电路图。
+
+\begin{generalfig}[htb]{RTL电路图}{fig:RTLFigure}
+	\includegraphics[width=8cm]{Figures/RTLFigure.png}
+\end{generalfig}
+
+\subsubsection{综合实现报告与分析}
+
+Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路，所以与C语言不同，编程时特别在意硬件资源的消耗、时序分析以及功耗分析，如果实现相同的功能，而硬件消耗过多的话，那么这个设计就基本上是失败的。同理，时序、功耗等参数也是分析设计的重点。
+
+\subsubsubsection{时序报告分析}
+
+在一个时序电路中，一定要满足信号的建立时间和保持时间，否则信号时序出错，数据不能正确的传达。
+
+根据在数字电路基础这门课上学到的知识，可以得到以下的参数关系。
+
+{\songti \bfseries 建立时间}（Ts：set up time）是指在时钟沿到来之前数据从不稳定到稳定所需的时间，如果建立时间不满足要求，那么数据将不能在这个时钟上升沿被稳定地送入触发器；{\songti \bfseries 保持时间}（Th：hold time）是指数据稳定后保持的时间，如果保持时间不满足要求那么数据同样也不能被稳定地送入触发器。
+
+由于建立时间与保持时间的和是稳定的一个时钟周期，如果时钟有延时，同时数据的延时也较小，那么建立时间必然是增大的，保持时间就会随之减小，如果减小到不满足D2的保持时间要求时就不能采集到正确的数据，这时即$ T-(T_{pd}-T_{co}-T_{2min})< T_4 $,就不满足要求了，所以D2的保持时间应该为：$ T-(T_{pd}+T-T_{co}-T_{2min})\ge T_4 $即$ T_{co}+T_{2min} - T_{pd} \ge T_4 $从上式也可以看出如果$ T_{pd}=0 $也就是时钟的延时为0，那么同样要求$ T_{co}+T_{2min}>T_4 $，但是在实际的应用中由于$ T_2 $的延时也就是线路的延时远远大于触发器的保持时间即$ T_4 $，所以不必要关心保持时间。
+
+\autoref{fig:TimingReport}为时序分析报告，可以看到，在100MHz时钟下，建立时间、保持时间以及脉宽都满足时序约束要求。
+
+\begin{generalfig}[htb]{时序分析报告}{fig:TimingReport}
+	\includegraphics[width=\textwidth]{Figures/TimingReport.png}
+\end{generalfig}
+
+\subsubsubsection{功耗分析}
+
+低功耗是集成电路发展的一个趋势，如果实现一个完好的功能，实现了较低的功耗，那么这样的产品无疑是极有竞争力的。因此需要研究系统功耗，在Xilinx的集成开发工具Vivado中，带有功耗分析的功能。\autoref{fig:PowerAnalysis}所示为系统的功耗分析报告。
+
+\begin{generalfig}[htb]{功耗分析报告}{fig:PowerAnalysis}
+	\includegraphics[width=12cm]{Figures/PowerAnalysis.png}
+\end{generalfig}
+
+从图中可以看出，本设计的功耗主要用在ARM核上（即PS部分），达到了总功耗的86\%。本设计使用了很多数据传输的IP核，这些IP核都是需要高速时钟驱动的，而逻辑部分没有占用太多的功耗，可以说本系统在功耗上控制得不错。
+
+\subsubsubsection{资源分析}
+从综合到实现，Vivado工具会帮我们做一些布局布线的优化，所以综合阶段的资源占用和实现阶段的资源占用是不一样的，因此选用实现阶段后的资源报告来作为最终的资源分析，如\autoref{fig:ResourceAnalysis}所示。
+
+\begin{generalfig}[htb]{资源分析}{fig:ResourceAnalysis}
+	\includegraphics[width=\textwidth]{Figures/ResourceAnalysis.png}
+\end{generalfig}
+
+\subsubsubsection{电路实现版图}
+
+如\autoref{fig:FPGAFinalFig}所示为我们作品的最终FPGA版图。
+
+
+\begin{generalfig}[htb]{FPGA实现版图}{fig:FPGAFinalFig}
+	\includegraphics[width=12cm]{Figures/FPGAFinalFig.png}
+\end{generalfig}
+
+可以看到，版图中用于实现逻辑的部分不算多，且逻辑占用大多用于通用的FIFO、DMA、VDMA等数据传输模块。众所周知，越通用的IP越会占用更多的资源去完成通用性，因此选用Xilinx的通用IP核只是为了提高开发效率，它会占用更多的资源。
+
+\subsection{FPGA调试}
+
+\subsubsection{ILA测试简介}
+
+\subsubsubsection{Vivado ILA简介}
+
+逻辑分析仪是从测试设备上采集和显示数字信号的仪器，最主要作用在于时序判定。由于逻辑分析仪不像示波器那样有许多电压等级，通常只显示两个电压（逻辑1和0），因此设定了参考电压后，逻辑分析仪将被测信号通过比较器进行判定，高于参考电压者为High，低于参考电压者为Low，在High与Low之间形成数字波形。
+
+逻辑分析仪与示波器相同，是通过采集指定的信号，并通过图形化的方式展示给开发人员，开发人员根据这些图形化信号按照协议分析出是否出错。尽管图形化的显示已经给开发人员带来不少的方便，但是人工将一串串信号分析出来不仅麻烦而且极易出错。在这个科技高速发展的社会，一切都在追求高效率。自动化、智能化已经成为协议分析的发展方向。在这个思想的指引下各种测试仪器的协议分析功能出现并发展起来。目前大多数开发人员通过逻辑分析仪等测试工具的协议分析功能可以很轻松的发现错误、调试硬件，加快开发进度，为高速度、高质量完成工程提供保障。
+
+逻辑分析仪的工作就是数据采集、存储、触发、显示，由于它采用数字存储技术，可将数据采集工作和显示工作分开进行，也可同时进行，必要时，对存储的数据可以反复进行显示，以利于对问题的分析和研究。
+
+然而，逻辑分析仪的成本太高，且使用起来麻烦，因此在大多数FPGA中都包含嵌入式逻辑分析仪，利用JTAG接口即可直接在PC端的开发平台上在线调试，观察FPGA运行时的内部信号波形与寄存器值等参数，加快了调试人员的开发速度，减少了开发周期。
+
+在Xilinx的FPGA中，包含ILA这个嵌入式逻辑分析仪，在Vivado开发平台中即可对其进行配置与运行，与Altera公司的Signal Tap类似。但Vivado的ILA可以代码配置，也可以IP核配置，相比Signal Tap更灵活，如\autoref{fig:ILAIPConfig}所示为它的IP核配置界面。接下来将介绍Vivado ILA的使用。
+
+\begin{generalfig}[htb]{ILA IP核配置}{fig:ILAIPConfig}
+	\includegraphics[width=12cm]{Figures/ILAIPConfig.png}
+\end{generalfig}
+
+\subsubsubsection{Vivado ILA的使用}
+
+综合完成后，可以打开综合界面进行“debug setup”，即配置ILA，可以在配置的时候选择采样点数、是否预触发采样、是否捕捉采样等等。一般要开启捕捉采样，方便调试。配置好ILA之后再选择实现硬件，生成比特流的操作，烧写到FPGA板子之后，便可以在运行时在线调试。
+
+
+\subsubsection{ILA调试分析}
+\subsubsubsection{ADC、采样、触发系统、FIFO、DMA综合调试}
+
+使用ILA进行调试，使用信号源对ADC输入不同频率的信号，设置不同的水平档位，处理器中控制底层数据开始采样，设置ILA触发条件为状态机跳变为预触发的状态，对模块进行综合验证调试，从而测试ADC数据、采样系统、触发系统、FIFO、DMA的功能正确性，得到以下调试图片。经过多次调试修改，验证功能正确。
+
+\begin{generalfig}[htb]{50us/div档位ILA调试图片}{fig:50usdiv}
+	\includegraphics[width=12cm]{Figures/50usdiv.jpg}
+\end{generalfig}
+
+\begin{generalfig}[htb]{0.1us/div档位ILA调试图片}{fig:0.1usdiv}
+	\includegraphics[width=12cm]{Figures/0.1usdiv.jpg}
+\end{generalfig}
+
+\subsubsection{液晶显示屏调试}
+
+由于液晶显示屏的时序较为清晰，故不采用嵌入式逻辑分析仪进行调试，而是直接观察输出效果。从软件顶层查看底层硬件的锁相环配置情况，即可得知显示屏的工作频率是否正确。在调试的过程中还是遇到了一些bug，有时候屏幕会进入花屏，最终发现是锁相环没有约束住，最后干脆就不采用可重构的锁相环，直接在PL部分生成一个51.2MHz的锁相环，用来给显示屏提供时钟。
+
+
+\subsubsection{人机交互界面调试}
+人机交互也是本作品的一个核心亮点，除了显示以外，还必须做触屏操作的处理，因此在触屏终端服务函数设置断点，观察每次进入这个函数（即触屏）的时候，收到的值是否正确，是否能够收到正确的值（即是否满足IIC协议）。经验证无误后再编写具体的功能服务。
+
+\subsubsection{任务调度调试}
+本设计中采用了嵌入式实时操作系统来进行任务调度，为了验证任务调度的正确性，在调试中采用了“任务中中断”的方法，对于低优先级任务，通过触屏、刷屏等高优先级任务，甚至中断，来打断它，测试优先级调度的准确性。
+
+\subsection{系统功能测试}
+在所有软件调试完成之后，我们进行了系统级的调试，主要是测试本作品的功能指标是否满足。
+
+根据题意，我们联合调试了作品的波形显示、挡位切换、触发调节、存储与调用功能、触发电平、参数测量、光标测量等功能。并用信号发生器产生各种波形来进行功能测试。最终结果也较好的反映了示波器的所有正常功能，并有部分指标超出了题目要求。如\autoref{fig:TestFigure}所示即为我们的系统功能调试照片。
+
+\begin{generalfig}[htb]{示波器整体照片}{fig:TestFigure}
+	\includegraphics[width=12cm]{Figures/TestFigure.jpg}
+\end{generalfig}
 
 \section{总结与展望}\label{sec:conclusion}
 
@@ -711,30 +918,6 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 
 未来，
 这是一个参考文献引用的范例\cite{5502350, liang2019large}
-
-
-\section{公式这么用}
-
-\begin{equation}
-	\bm{A}=\begin{bmatrix}
-		1  & 2  & 3  & 4  \\
-		11 & 22 & 33 & 44 \\
-	\end{bmatrix}
-	\times\begin{bmatrix}
-		22 & 24 \\
-		32 & 34 \\
-		42 & 44 \\
-		52 & 54 \\
-	\end{bmatrix}
-\end{equation}
-或者多个带编号的公式
-\begin{eqnarray}
-	f_1(x)=12x^2+36x+\sin x\\
-	f_2(x)=\sqrt{3}{x^3+3x}
-\end{eqnarray}
-以上
-
-
 
 \begin{thankpage}
 	
