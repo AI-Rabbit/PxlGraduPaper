@@ -277,9 +277,52 @@ todo
 
 文献\normalcite{Chen2018dian}中研究了透射式智能超表面对电磁波的调控机理。
 本小节基于此，推导出反射式超表面对电磁波的调控机理。
+我们知道，智能超表面是通过在分界面处引入一个附加相位来实现对电磁波的调控，从而引起等相位面的改变。
 
-todo
+超表面的反射单元通过有序的周期性排列组成，通过设定各个单元的反射系数可以实现对电磁波波束的灵活调控。
+下面将通过把球面波调控为平面波并向垂直与阵面方向反射的例子介绍超表面对电磁波的调控机理。
+如\autoref{fig:ris}所示，图中每个矩形贴片代表电磁超表面的一个结构单元，一共有$M \times N$个结构单元。
+图xxxx中为相位补偿示意图，其中，$F(m,n)$代表馈源的相位中心到超表面结构单元$(m,n)$的相位延迟，$S(m,n)$表示超表面单元$(m,n)$上入射波与反射波的相位差。
+根据上述参数，反射波的相位分布可表示为：
+\begin{equation}
+	\left\{
+		\begin{array}{l}
+			\varphi(m,n)=F(m,n)+S(m,n) \\
+			\varphi(0,0)=F(0,0)+S(0,0)
+		\end{array}
+	\right.
+\end{equation}
+其中，$\varphi(m,n)$与$\varphi(0,0)$分别代表了结构单元$(m,n)$与$(0,0)$的反射波的出射相位。
+ 
+\begin{generalfig}[htb]{广义斯涅尔折射定律的示意图}{fig:Snell-Law}
+	\includegraphics[width=0.5\linewidth]{Figures/Snell-Law.pdf}
+\end{generalfig}
 
+设计目的是垂直反射，为了形成平行于超表面的等相位面，出射相位之间需要满足以下关系式：
+\begin{equation}
+	\varphi (m,n) - \varphi (0,0) = 2p \pi, \; p = 0, \pm 1,\pm 2,\dots 
+\end{equation}
+联立上述两式，可以得到：
+\begin{equation}
+	S(m,n)-S(0,0)=-F(m,n)+F(0,0)+2p\pi, \; p = 0, \pm 1,\pm 2,\dots 
+\end{equation}
+其中，$S(0,0)$是参考相位，它的值应根据应用时的具体需求去选择，$S(0,0)$确定之后，可推出$S(m,n)$。
+
+当然，反射后的波束方向不会局限于垂直阵面表面，可以根据应用需要任意选择。
+如果希望反射后电磁波波束在$(\theta_0,\phi_0)$方向上，那么位于$(m,n)$位置上的结构单元相对结构单元$(0,0)$的相位差可表示为：
+\begin{equation}
+	\varphi(m,n)-\varphi(0,0)=k(md\sin⁡\theta_0 \cos⁡\phi_0+nd\sin⁡\theta_0 \sin\phi_0)+2p\pi,\;p = 0, \pm 1,\dots 
+\end{equation}
+其中，$k$为波数，$k=2\pi/ \lambda$，$\lambda$为波长，$d$为单元间距。要使反射后电磁波波束在$(\theta_0,\phi_0)$方向，那么$(\theta_0,\phi_0)$方向应形成等相位面。
+此时，由阵列理论可知，超表面上反射波与入射波的相位差$S(m,n)$应满足：
+\begin{equation}
+	\begin{aligned}
+		S(m,n)&=-F(m,n)-(\varphi(m,n)-\varphi(0,0))+2p\pi \\
+	          &=-F(m,n)-k(md\sin⁡\theta_0 \cos⁡\phi_0+nd\sin⁡\theta_0 \sin\phi_0)+2p\pi ,\\
+			  &\qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad p = 0, \pm 1,\dots 
+	\end{aligned}
+\end{equation}
+根据上式，只要反射波波束方向$(\theta_0,\phi_0)$确定，发射机相位中心到超表面结构单元$(m,n)$的相位延迟$F(m,n)$确定，就可以确定超表面上所需要的反射相位关系$S(m,n)$。之后，只要将超表面阵列中各个结构单元的反射相位关系与超表面结构参数意义对应，级控制表面单元的电压或者通断，便可以完成能够将馈源发射的电磁波反射到特定方向的电磁超表面的设计，实现对电磁波的灵活调控。
 
 \subsection{本章小结}
 
@@ -437,7 +480,8 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 
 \subsection{本章小结}
 
-在本章中，我们首先在第二节解释了无源金属表面如何散射入射波，然后在第三节推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
+在本章中，我们首先在解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
+下一章将建立智能超表面系统的传输模型，并分析其性能。
 
 \section{系统传输建模仿真分析}\label{sec:simulation}
 
@@ -680,7 +724,7 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 	\centering
 	\subfloat[三维仿真图]{\includegraphics[width=0.4\linewidth]{Figures/CCB_3D.pdf}}
 	\hfil
-	\subfloat[实物图]{\includegraphics[width=0.4\linewidth]{Figures/CCB_3D.pdf}}
+	\subfloat[实物图]{\includegraphics[width=0.4\linewidth]{Figures/CCB_real.jpg}}
 	\caption{智能超表面控制电路}
 	\label{fig:CCB_ALL}
 \end{figure}
@@ -691,7 +735,7 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 
 \subsubsection{设计思路}
 
-\autoref{fig:Timing-diagram}为74LVC595ABQ的时序图。
+首先需要控制移位寄存器\autoref{fig:Timing-diagram}为74LVC595ABQ的时序图。
 
 \begin{generalfig}[htb]{74LVC595ABQ时序图}{fig:Timing-diagram}
 	\includegraphics[width=0.8\linewidth]{Figures/Timing-diagram.pdf}
@@ -720,6 +764,22 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 
 \section{系统调试}
 
+
+
+\subsection{系统搭建}
+RIS辅助无线通信系统由个人计算机、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。主机、USRP和天线是发射机的主要部件，接收器由相同的主要部件组成。这些收发器分别模拟接入点或基站和用户设备。发射机使用单个无源天线发送视频流。数据通过用户数据报协议（UDP）传输。接收器解码数据流并在主机上播放视频。
+图3出是RIS辅助无线通信系统原型的硬件框图。表1总结了系统中使用的硬件模块的细节。在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换），我们引入了一个反馈链路，它用串行端口连接RIS板和接收器。接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。反馈可用于测量应用反射系数的有效性。下一节将描述我们如何利用这种反馈进行波束赋形设计。
+接下来介绍通信系统的软件框架。系统的信号处理流程如图4所示。首先，我们的发送端上位机程序从UDP套接字加载外部应用程序提供的数据。在有效载荷数据被编码之后，样本被映射到时间-频率资源。然后，采用正交频分复用（OFDM）调制，将频域并行信号转换为时域串行信号。在我们的实验中，带宽和子载波间隔分别为20 MHz和312.5 KHz。信号被上变频到载波频率并通过发射天线发射。
+接收器模块执行与发射器相反的功能。同步和载波频偏（CFO）补偿是通过连续测量导频信号的自相关和互相关来实现的。需要注意的是，本原型系统采用了现有的WiFi标准，WiFi的空中信令保持完整。换言之，在不修改无线通信协议的情况下，可以无缝地将RIS技术集成到现有的通信网络中。
+ 
+图3 RIS辅助通信系统的系统图
+表1 硬件模块详细信息
+名称	描述
+中央处理器	英特尔酷睿i7-9700处理器的电脑
+软件无线电	NI USRP-2954R
+FGPA模块	赛灵思Zynq 7100开发板
+喇叭天线	5.8GHz时的增益为17.1 dBi
+
 \subsection{FPGA开发流程}
 
 \subsubsection{开发流程重要步骤说明与图示}
@@ -728,11 +788,11 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 进入Vivado开发平台后，首先点击新建工程，如\autoref{fig:NewProject}所示。
 
 \begin{generalfig}[htb]{新建工程}{fig:NewProject}
-	\includegraphics[width=12cm]{Figures/NewProject.png}
+	\includegraphics[width=0.8\linewidth]{Figures/NewProject.png}
 \end{generalfig}
 
 
-确定工程的名字和路径之后，下一步是器件选型，本课程设计选用的FPGA型号为Zynq-7020，因此芯片型号为xc7z020clg400-2，如\autoref{fig:PartChoose}所示。
+确定工程的名字和路径之后，下一步是器件选型，本设计选用的FPGA型号为Zynq-7035，因此芯片型号为xc7z035clg400-2，如\autoref{fig:PartChoose}所示。
 
 \begin{generalfig}[htb]{器件选型}{fig:PartChoose}
 	\includegraphics[width=12cm]{Figures/PartChoose.png}
@@ -811,7 +871,7 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 
 根据在数字电路基础这门课上学到的知识，可以得到以下的参数关系。
 
-{\songti \bfseries 建立时间}（Ts：set up time）是指在时钟沿到来之前数据从不稳定到稳定所需的时间，如果建立时间不满足要求，那么数据将不能在这个时钟上升沿被稳定地送入触发器；{\songti \bfseries 保持时间}（Th：hold time）是指数据稳定后保持的时间，如果保持时间不满足要求那么数据同样也不能被稳定地送入触发器。
+{\bfseries 建立时间}（Ts：set up time）是指在时钟沿到来之前数据从不稳定到稳定所需的时间，如果建立时间不满足要求，那么数据将不能在这个时钟上升沿被稳定地送入触发器；{\bfseries 保持时间}（Th：hold time）是指数据稳定后保持的时间，如果保持时间不满足要求那么数据同样也不能被稳定地送入触发器。
 
 由于建立时间与保持时间的和是稳定的一个时钟周期，如果时钟有延时，同时数据的延时也较小，那么建立时间必然是增大的，保持时间就会随之减小，如果减小到不满足D2的保持时间要求时就不能采集到正确的数据，这时即$ T-(T_{pd}-T_{co}-T_{2min})< T_4 $,就不满足要求了，所以D2的保持时间应该为：$ T-(T_{pd}+T-T_{co}-T_{2min})\ge T_4 $即$ T_{co}+T_{2min} - T_{pd} \ge T_4 $从上式也可以看出如果$ T_{pd}=0 $也就是时钟的延时为0，那么同样要求$ T_{co}+T_{2min}>T_4 $，但是在实际的应用中由于$ T_2 $的延时也就是线路的延时远远大于触发器的保持时间即$ T_4 $，所以不必要关心保持时间。
 
@@ -903,13 +963,13 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 
 根据题意，我们联合调试了作品的波形显示、挡位切换、触发调节、存储与调用功能、触发电平、参数测量、光标测量等功能。并用信号发生器产生各种波形来进行功能测试。最终结果也较好的反映了示波器的所有正常功能，并有部分指标超出了题目要求。如\autoref{fig:TestFigure}所示即为我们的系统功能调试照片。
 
-\begin{generalfig}[htb]{示波器整体照片}{fig:TestFigure}
+\begin{generalfig}[htb]{智能超表面系统整体照片}{fig:TestFigure}
 	\includegraphics[width=12cm]{Figures/TestFigure.jpg}
 \end{generalfig}
 
 \section{总结与展望}\label{sec:conclusion}
 
-毕业设计主要内容到这里就告一段落了，下面总结一下这几个月来的研究工作和未来研究生阶段的展望
+毕业设计主要内容到这里就告一段落了，下面总结一下这几个月来的学习研究工作，规划一下未来研究生阶段的展望
 
 \subsection{论文研究工作总结}
 
@@ -924,6 +984,14 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 
 
 	\LaTeX
+	
+	尹老师鱼渔兼授，智志双扶。
+
+	感谢大鹏学长对我的无私帮助。
+	此生遇见展鹏学长是一件幸事——如耶稣所说，他具有蛇的智慧，兼有鸽子的温柔敦厚。
+	去年仲夏客居藏龙岛，大鹏待我亲切热情，慷慨厚道。
+	他对科学研究好奇深思，深沉而不免于轻浮。
+	“实之华之兹乃兼求，逆风兮，顺风兮，无阻其飞扬！”
 
 	% 离家求学三年有余，却始终放不下对故乡的思念，“城中桃李愁风雨，春在溪头荠菜花。”
 
@@ -937,7 +1005,7 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 	\end{center}
 	
 	\begin{figure}[htb]
-		\flushright
+		\raggedleft
 		\includegraphics[width=15mm]{Figures/Seal-pxl.pdf}
 	\end{figure}
 
