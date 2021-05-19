@@ -206,7 +206,7 @@ todo
 本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。
 文中首先在\autoref{sec:theory}介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及波束赋形理论。
 
-\autoref{sec:simulation}开始对RIS通信系统建模分析，比较了巴拉巴拉
+\autoref{sec:transmission}开始对RIS通信系统建模分析，比较了巴拉巴拉
 
 \autoref{sec:design}设计了一个由可编程超表面及其控制电路构成的智能反射面系统，
 
@@ -282,7 +282,7 @@ todo
 超表面的反射单元通过有序的周期性排列组成，通过设定各个单元的反射系数可以实现对电磁波波束的灵活调控。
 下面将通过把球面波调控为平面波并向垂直与阵面方向反射的例子介绍超表面对电磁波的调控机理。
 如\autoref{fig:ris}所示，图中每个矩形贴片代表电磁超表面的一个结构单元，一共有$M \times N$个结构单元。
-图xxxx中为相位补偿示意图，其中，$F(m,n)$代表馈源的相位中心到超表面结构单元$(m,n)$的相位延迟，$S(m,n)$表示超表面单元$(m,n)$上入射波与反射波的相位差。
+\autoref{fig:phase}中为相位补偿示意图，其中，$F(m,n)$代表馈源的相位中心到超表面结构单元$(m,n)$的相位延迟，$S(m,n)$表示超表面单元$(m,n)$上入射波与反射波的相位差。
 根据上述参数，反射波的相位分布可表示为：
 \begin{equation}
 	\left\{
@@ -294,8 +294,8 @@ todo
 \end{equation}
 其中，$\varphi(m,n)$与$\varphi(0,0)$分别代表了结构单元$(m,n)$与$(0,0)$的反射波的出射相位。
  
-\begin{generalfig}[htb]{广义斯涅尔折射定律的示意图}{fig:Snell-Law}
-	\includegraphics[width=0.5\linewidth]{Figures/Snell-Law.pdf}
+\begin{generalfig}[htb]{相位补偿示意图}{fig:phase}
+	\includegraphics[width=0.5\linewidth]{Figures/phase.pdf}
 \end{generalfig}
 
 设计目的是垂直反射，为了形成平行于超表面的等相位面，出射相位之间需要满足以下关系式：
@@ -322,11 +322,12 @@ todo
 			  &\qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad p = 0, \pm 1,\dots 
 	\end{aligned}
 \end{equation}
-根据上式，只要反射波波束方向$(\theta_0,\phi_0)$确定，发射机相位中心到超表面结构单元$(m,n)$的相位延迟$F(m,n)$确定，就可以确定超表面上所需要的反射相位关系$S(m,n)$。之后，只要将超表面阵列中各个结构单元的反射相位关系与超表面结构参数意义对应，级控制表面单元的电压或者通断，便可以完成能够将馈源发射的电磁波反射到特定方向的电磁超表面的设计，实现对电磁波的灵活调控。
+根据上式，只要反射波波束方向$(\theta_0,\phi_0)$确定，发射机相位中心到超表面结构单元$(m,n)$的相位延迟$F(m,n)$确定，就可以确定超表面上所需要的反射相位关系$S(m,n)$。之后，只要将超表面阵列中各个结构单元的反射相位关系与超表面结构参数意义对应。
+通过控制表面单元的电压或者表面元件的通断，便可以完成能够将馈源发射的电磁波反射到特定方向的电磁超表面的设计，实现对电磁波的灵活调控。
 
 \subsection{本章小结}
 
-本章主要介绍了
+本章主要介绍了广义斯涅尔定律和超表面对电磁信号的调控机理，为后面的理论研究和系统实现打下了基础。
 
 \section{物理、传播和路径损耗建模}\label{sec:modeling}
 
@@ -478,18 +479,13 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 \end{equation}
 因此，我们可以将智能超表面解释为一组特殊的散射体。这些散射体在接收器处对其反射信号进行相位校准，实现相干增强，从而实现“异常”反射。
 
-\subsection{本章小结}
+\subsection{智能超表面的传输模型}\label{sec:transmission}
 
-在本章中，我们首先在解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
-下一章将建立智能超表面系统的传输模型，并分析其性能。
-
-\section{系统传输建模仿真分析}\label{sec:simulation}
-
-\subsection{系统传输模型}
+\subsubsection{单输入单输出（SISO）信道}
 
 考虑从单天线源到单天线目的地的通信（SISO）。确定性平坦衰落信道表示为$h_{\mathrm{sd}} \in \mathbb{C}$，目的地接收到的信号是：
 \begin{equation}
-	y=h_{\mathrm{sd}} \sqrt{p} s+n
+	y=h_{\mathrm{sd}} \sqrt{p} s + n
 \end{equation}
 其中$p$是发射功率，$s$是单位功率信息信号，$n \sim \mathcal{N}_{\mathbb{C}}\left(0, \sigma^{2}\right)$是接收机噪声。为了便于分析，天线增益包含在信道中。
 该单输入单输出（SISO）信道的容量为：
@@ -498,22 +494,45 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 \end{equation}
 通过在通信中加入额外的设备，可以潜在地增加容量。
 
-在本章中，我们考虑两种不同的中继方式，其一为智能超表面，其二为中继器。智能超表面被配置为使反射波束指向目的地，中继器工作于经典的解码转发模式下。
-下面导出相应的可实现速率，然后通过分析进行优化，以实现公平的比较。
-然而，本章中选择的信道模型是“偏心”智能超表面的，特别是确定性平坦衰落信道的假设对于智能超表面辅助增强通信是理想的，因为它不能获取信道状态信息（Channel State Information, CSI），比中继站更不能处理信道估计和频率选择性衰落。
-
 \subsubsection{智能超表面使能的传输}
 
-如图xxxxxx(a)所示，RIS由总共由$L$个元素组成。从基站到智能超表面的确定性信道表示为$\mathbf{h}_{\mathrm{sr}} \in \mathbb{C}^{L}$，$\left[\mathbf{h}_{\mathrm{sr}}\right]_{l}$代表第$l$个结构单元的信道。从智能超表面到终端的信道表示为$\mathbf{h}_{\mathrm{rd}} \in \mathbb{C}^{L}$，每个单元的尺寸都小于入射波波长，这样可以认为\cite{emil2019intelligent}
+下面考虑智能超表面使能的传输，智能超表面被配置为使反射波束指向目的地。
+因为它不能获取信道状态信息（Channel State Information, CSI），
+假设智能超表面辅助增强通信具有确定性平坦衰落的信道。
 
-因此，它以近似恒定的增益向所有感兴趣的方向散射输入信号
+\begin{generalfig}[htb]{智能超表面使能的传输示意图}{fig:RIS-transmission}
+	\includegraphics[width=0.6\linewidth]{Figures/RIS-transmission.pdf}
+\end{generalfig}
 
+如\autoref{fig:RIS-transmission}所示，RIS由总共由$L$个元素组成。从基站到智能超表面的确定性信道表示为$\mathbf{h}_{\mathrm{sr}} \in \mathbb{C}^{L}$，$\left[\mathbf{h}_{\mathrm{sr}}\right]_{l}$代表第$l$个结构单元的信道。从智能超表面到终端的信道表示为$\mathbf{h}_{\mathrm{rd}} \in \mathbb{C}^{L}$，每个单元的尺寸都小于入射波波长，这样可以认为它以近似恒定的增益向所有感兴趣的方向散射输入信号\cite{emil2019intelligent}。
+智能超表面的所有单元的反射系数可以表示为：
+\begin{equation}
+	\boldsymbol{\Theta}=\alpha \operatorname{diag}\left(e^{j \theta_{1}}, \ldots, e^{j \theta_{L}}\right)
+\end{equation}
+其中$\alpha \in (0,1]$是固定振幅反射系数，$\theta_{1}, \ldots, \theta_{L}$是RIS单元的相移变量，接收端的信号可以表示为：
+\begin{equation}
+	y=\left(h_{\mathrm{sd}}+\mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}}\right) \sqrt{p} s+n
+\end{equation}
+其中$p$、$s$和$n$的定义与SISO情况相同。
 
-\subsection{分析性能比较}
-\subsection{仿真性能比较}
+\begin{lemma}
+	智能超表面使能的网络的信道容量为：
+	\begin{align}
+		R_{\mathrm{IRS}}(L) &=\max _{\theta_{1}, \ldots, \theta_{L}} \log _{2}\left(1+\frac{p\left|h_{\mathrm{sd}}+\mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}}\right|^{2}}{\sigma^{2}}\right) \label{eq:R-RIS1} \\
+		&=\log _{2}\left(1+\frac{p\left(\left|h_{\mathrm{sd}}\right|+\alpha \sum_{l=1}^{L}\left|\left[\mathbf{h}_{\mathrm{sr}}\right]_{l}\left[\mathbf{h}_{\mathrm{rd}}\right]_{l}\right|\right)^{2}}{\sigma^{2}}\right)
+	\end{align}
+\end{lemma}
+
+\begin{proof}
+	对于任意给定的$\boldsymbol{\Theta}$，\autoref{eq:R-RIS1}中的速率表达式是由加性白高斯噪声信道的容量获得的。注意$ \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}} = \alpha \sum_{l=1}^{L} e^{j\theta_l} \left[\mathbf{h}_{\mathrm{sr}}\right]_{l}\left[\mathbf{h}_{\mathrm{rd}}\right]_{l} $。当单元的相移$\theta_{l}=\arg \left(h_{\mathrm{sd}}\right)-\arg \left(\left[\mathbf{h}_{\mathrm{sr}}\right]_{n}\left[\mathbf{l}_{\mathrm{rd}}\right]_{l}\right)$时，系统达到最大传输速率。
+\end{proof}
+
 \subsection{本章小结}
 
-本章
+在本章中，我们首先在解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
+并建立智能超表面系统的传输模型，解释了在何种条件下，系统达到最大传输速率。
+下一章将详细叙述智能超表面系统的设计与实现。
+
 
 \section{系统设计与实现}\label{sec:design}
 
