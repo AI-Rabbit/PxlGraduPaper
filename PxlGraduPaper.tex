@@ -533,19 +533,20 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 并建立智能超表面系统的传输模型，解释了在何种条件下，系统达到最大传输速率。
 下一章将详细叙述智能超表面系统的设计与实现。
 
-
 \section{系统设计与实现}\label{sec:design}
 
 \subsection{智能超表面选择}\label{subsec:28-GHz-RIS}
 
 本设计选用了\autoref{fig:28-GHz-RIS}所示的工作频点为28 GHz的智能超表面。
-其中\autoref{fig:28-GHz-RIS}(a)为三维仿真图，\autoref{fig:28-GHz-RIS}(b)为实物图。
+其中\autoref{fig:28-GHz-RIS}(a)为三维仿真图，\autoref{fig:28-GHz-RIS}(b)为正视实物图，\autoref{fig:28-GHz-RIS}(c)为立体实物图。
 
 \begin{figure}[htb]
 	\centering
 	\subfloat[三维仿真图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-3D.JPG}}
 	\hfil
-	\subfloat[实物图]{\includegraphics[width=0.6\linewidth]{Figures/28-GHz-RIS-real.jpg}}
+	\subfloat[正视实物图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real.jpg}}
+	\hfil
+	\subfloat[立体实物图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real2.jpg}}
 	\caption{28 GHz智能超表面}
 	\label{fig:28-GHz-RIS}
 \end{figure}
@@ -750,100 +751,73 @@ FB引脚上的电压将设置输出电压$V_\mathrm{OUT}$，并由$R_1$和$R_2$�
 
 \subsection{驱动、固件设计}
 
-本小节将详述智能超表面驱动、固件的设计。
+本小节将详述智能超表面驱动、固件的设计。驱动程序和固件是一个复杂系统的“地基”，没有它就不能建成高楼大厦。本节中，我将从设计思路入手，把驱动的设计过程和实现方法娓娓道来。
 
 \subsubsection{设计思路}
 
-首先需要控制移位寄存器\autoref{fig:Timing-diagram}为74LVC595ABQ的时序图。
+首先需要控制移位寄存器。根据\autoref{fig:Timing-diagram}即74LVC595ABQ的时序图，在顶级模块声明移位时钟，数据和锁存引脚，以及系统时钟，然后使用状态机，定义空闲状态为锁存状态，即不存在新的数据输入，这时移位寄存器模块不工作。定义更新状态，此时新的数据输入模块，模块将输入的并行数据按照\autoref{fig:Timing-diagram}串行输出，最后更新锁存引脚。
 
 \begin{generalfig}[htb]{74LVC595ABQ时序图}{fig:Timing-diagram}
 	\includegraphics[width=0.8\linewidth]{Figures/Timing-diagram.pdf}
 \end{generalfig}
 
-
-
-\subsubsection{实现细节}
+其次要控制的是移位寄存器模块和顶层之间的通信，这里使用的是赛灵思公司提供的AXI总线。
+AXI（Advanced eXtensible Interface）本是由ARM公司提出的一种总线协议， Xilinx从 6 系列的 FPGA 开始对 AXI 总线提供支持，目前使用 AXI4 版本。
+数据可以同时在主设备和从站之间的双向移动，数据传输大小可以变化。
+在顶层的基于C语言或Free RTOS操作系统的控制软件中，只需要向移位寄存器模块IP的相应地址写入控制数据即可实现对智能超表面的控制。
 
 考虑到底层的控制逻辑需要并行输出，顶层又需要做算法的执行和无线通信，所以选择了赛灵思公司的Zynq$^\circledR$-7000 SoC\footnote{详细介绍可参考 https://china.xilinx.com/products/silicon-devices/soc/zynq-7000.html 。}作为主控制器。
 本系列处理器集成了ARM$^\circledR$处理器的软件可编程性与Xilinx FPGA的硬件可编程性，不仅可实现重要分析与硬件加速，同时还在单个器件上高度集成 CPU、DSP、ASSP以及混合信号功能。
-其框图如\autoref{fig:zynq-7000}所示，该FPGA PS部分具有两个ARM Cortex-A9高性能应用级ARM处理器，PL部分有171.9 k个LUT，343.8 k个触发器，并且有1 GB DDR3 SDRAM，4 GB eMMC，满足设计需求。	
+其框图如\autoref{fig:zynq-7000}所示，该FPGA PS部分具有两个ARM Cortex-A9高性能应用级ARM处理器，PL部分有171.9 k个LUT，343.8 k个触发器。
+所选用的核心板有1 GB DDR3 SDRAM，4 GB eMMC，资源丰富。
+它还具有高速接口与可编程逻辑进行通信，满足设计需求。
 
 \begin{generalfig}[htb]{Zynq-7000 SoC框图}{fig:zynq-7000}
 	\includegraphics[width=0.8\linewidth]{Figures/zynq-7000.pdf}
 \end{generalfig}
 
+\subsubsection{设计流程}
 
-
-\subsection{码本设计}
-
-
-\subsection{本章小结}
-
-本章
-
-\section{系统调试}
-
-
-
-\subsection{系统搭建}
-RIS辅助无线通信系统由个人计算机、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。主机、USRP和天线是发射机的主要部件，接收器由相同的主要部件组成。这些收发器分别模拟接入点或基站和用户设备。发射机使用单个无源天线发送视频流。数据通过用户数据报协议（UDP）传输。接收器解码数据流并在主机上播放视频。
-图3出是RIS辅助无线通信系统原型的硬件框图。表1总结了系统中使用的硬件模块的细节。在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换），我们引入了一个反馈链路，它用串行端口连接RIS板和接收器。接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。反馈可用于测量应用反射系数的有效性。下一节将描述我们如何利用这种反馈进行波束赋形设计。
-接下来介绍通信系统的软件框架。系统的信号处理流程如图4所示。首先，我们的发送端上位机程序从UDP套接字加载外部应用程序提供的数据。在有效载荷数据被编码之后，样本被映射到时间-频率资源。然后，采用正交频分复用（OFDM）调制，将频域并行信号转换为时域串行信号。在我们的实验中，带宽和子载波间隔分别为20 MHz和312.5 KHz。信号被上变频到载波频率并通过发射天线发射。
-接收器模块执行与发射器相反的功能。同步和载波频偏（CFO）补偿是通过连续测量导频信号的自相关和互相关来实现的。需要注意的是，本原型系统采用了现有的WiFi标准，WiFi的空中信令保持完整。换言之，在不修改无线通信协议的情况下，可以无缝地将RIS技术集成到现有的通信网络中。
- 
-图3 RIS辅助通信系统的系统图
-表1 硬件模块详细信息
-名称	描述
-中央处理器	英特尔酷睿i7-9700处理器的电脑
-软件无线电	NI USRP-2954R
-FGPA模块	赛灵思Zynq 7100开发板
-喇叭天线	5.8GHz时的增益为17.1 dBi
-
-\subsection{FPGA开发流程}
-
-\subsubsection{开发流程重要步骤说明与图示}
-
-\subsubsubsection{新建工程}
-进入Vivado开发平台后，首先点击新建工程，如\autoref{fig:NewProject}所示。
-
-\begin{generalfig}[htb]{新建工程}{fig:NewProject}
-	\includegraphics[width=0.8\linewidth]{Figures/NewProject.png}
-\end{generalfig}
-
-
-确定工程的名字和路径之后，下一步是器件选型，本设计选用的FPGA型号为Zynq-7035，因此芯片型号为xc7z035clg400-2，如\autoref{fig:PartChoose}所示。
-
-\begin{generalfig}[htb]{器件选型}{fig:PartChoose}
-	\includegraphics[width=12cm]{Figures/PartChoose.png}
-\end{generalfig}
-
+进入赛灵思Vivado开发平台后，首先点击新建工程，确定工程的名字和路径之后，下一步是器件选型。
+本设计选用的FPGA型号为Zynq-7035，因此芯片型号为xc7z035ffg676-2。
 配置好器件型号之后，即完成了工程的创建，如\autoref{fig:FinishCreate}所示。
 
-\begin{generalfig}[htb]{完成创建}{fig:FinishCreate}
-	\includegraphics[width=12cm]{Figures/FinishCreate.png}
+\begin{generalfig}[htb]{完成工程创建}{fig:FinishCreate}
+	\includegraphics[width=0.8\linewidth]{Figures/FinishCreate.png}
 \end{generalfig}
 
-\subsubsubsection{新建文件}
-进入新的Vivado工程之后，我们选择添加Block Design，因为本系统是软硬件协同的，需要用到处理器，因此选用Block Design模块化设计，如\autoref{fig:CreateBlockDesign}所示。
+进入新的Vivado工程之后，我们选择添加Block Design，因为本系统是软硬件协同的，需要用到处理器，因此选用Block Design模块化设计。
+添加好之后即添加IP、配置IP并连线、输出等等。
+选择让Vivado自动生成顶层Verilog代码，即可完成硬件部分的逻辑设计，顶层Wrapper将会自动生成。
+完成后的设计图如\autoref{fig:Block_diagram}所示。
 
-\begin{generalfig}[htb]{添加Block Design}{fig:CreateBlockDesign}
-	\includegraphics[width=8cm]{Figures/CreateBlockDesign.png}
+\begin{generalfig}[htb]{FPGA固件Block Diagram}{fig:Block_diagram}
+	\includegraphics[width=\linewidth]{Figures/Block_diagram.pdf}
 \end{generalfig}
 
+在设计每一个模块时，需要对模块进行功能仿真，Xilinx的Vivado平台自带仿真系统，也可以使用业界常用的Modelsim进行仿真。本设计使用Modelsim进行综合前仿真，以验证功能正确性。
+经过修改验证，得到如\autoref{fig:Modelsim}所示的正确的仿真波形。
+蓝色标记之间展示的是一个完整的8位移位操作。
+此仿真使用的是50 ns时钟周期，符合实际FPGA使用的20 MHz时钟。
+仿真显示，需要大约89个时钟来处理一次输出操作，即约为4.45 us。
 
-
-添加好之后即添加IP、配置IP并连线、输出等等，完成后的设计图在上文中提到。选择让Vivado自动生成顶层Verilog代码，即可完成硬件部分的逻辑设计，顶层Wrapper将会自动生成。
-
-\subsubsubsection{功能仿真}
-在设计每一个模块时，需要对模块进行功能仿真，Xilinx的Vivado平台自带仿真系统，也可以使用业界常用的Modelsim进行仿真。本设计使用Vivado进行综合前仿真，以验证功能正确性。
-
-编写testbench时，使用DDS（Direct Digital Synthesis，直接数字频率合成）生成模拟的正弦信号作为仿真信号源给状态机进行仿真。仿真模块实例化触发状态机以及FIFO，DMA部分由于缺少与处理器的交互没有加入仿真验证。经过修改验证，得到如\autoref{fig:VivadoSim}所示的正确的仿真波形。
-
-\begin{generalfig}[htb]{Vivado功能仿真}{fig:VivadoSim}
-	\includegraphics[width=12cm]{Figures/VivadoSim.png}
+\begin{generalfig}[htb]{移位寄存器功能仿真}{fig:Modelsim}
+	\includegraphics[width=\linewidth]{Figures/Modelsim.png}
 \end{generalfig}	
 
-\subsubsubsection{引脚约束}
+\autoref{fig:Modelsim}中的信号描述如下：
+\begin{itemize}
+	\item {\itshape RDY}：高电平表示移位寄存器模块是空闲的，准备好处理输出要求，低电平表示正在输出。
+	\item {\itshape RCLK}：发送到移位寄存器的信号，上升沿时输出寄存器从内部缓冲寄存器读取数据并输出。
+	\item {\itshape SRCLK}：发送到移位寄存器的信号，上升沿时指示移位寄存器从串行输入读取，将其推入LSB，进行移位操作。
+	\item {\itshape OE}：发送到移位寄存器的信号，该信号将移位寄存器输出设置为高阻态（禁用）或输出启用。这是一个低有效的信号。
+	\item {\itshape SER\_OUT}：发送到移位寄存器的串行信号。
+	\item {\itshape BYTE\_IN}：一个8位值，它被送入FPGA的移位寄存器模块中。
+	\item {\itshape CLK}：FPGA逻辑的时钟。
+	\item {\itshape PB}：为模拟目的创建的信号，以指示模块从BYTE\_IN读取8位值。每次按下此按钮被按下FPGA\_2\_SHIFTREG模块都被激活并指示读取BYTE\_IN。此外，驱动模块（模块实例化并使用FPGA\_2\_Shiftreg模块）将Byte\_in值递增一个。
+\end{itemize}
+
+引脚约束
 
 使用直接编写约束文件的方式，能大大提高开发效率，因为可以通过模板来快速编写约束文件，如\autoref{fig:XDCFile}所示为节选的约束文件。
 
@@ -879,6 +853,33 @@ FGPA模块	赛灵思Zynq 7100开发板
 \begin{generalfig}[htb]{RTL电路图}{fig:RTLFigure}
 	\includegraphics[width=8cm]{Figures/RTLFigure.png}
 \end{generalfig}
+
+
+
+\subsection{本章小结}
+
+本章主要介绍了智能超表面使能的无线通信系统的实现。从超表面的选择入手，依次介绍了控制电路的设计和驱动、固件的设计。
+这一步完成之后，便可以搭建RIS系统了。下一章将搭建智能超表面使能的无线通信系统并进行调试。
+
+\section{系统调试}
+
+
+
+\subsection{系统搭建}
+RIS辅助无线通信系统由个人计算机、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。主机、USRP和天线是发射机的主要部件，接收器由相同的主要部件组成。这些收发器分别模拟接入点或基站和用户设备。发射机使用单个无源天线发送视频流。数据通过用户数据报协议（UDP）传输。接收器解码数据流并在主机上播放视频。
+图3出是RIS辅助无线通信系统原型的硬件框图。表1总结了系统中使用的硬件模块的细节。在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换），我们引入了一个反馈链路，它用串行端口连接RIS板和接收器。接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。反馈可用于测量应用反射系数的有效性。下一节将描述我们如何利用这种反馈进行波束赋形设计。
+接下来介绍通信系统的软件框架。系统的信号处理流程如图4所示。首先，我们的发送端上位机程序从UDP套接字加载外部应用程序提供的数据。在有效载荷数据被编码之后，样本被映射到时间-频率资源。然后，采用正交频分复用（OFDM）调制，将频域并行信号转换为时域串行信号。在我们的实验中，带宽和子载波间隔分别为20 MHz和312.5 KHz。信号被上变频到载波频率并通过发射天线发射。
+接收器模块执行与发射器相反的功能。同步和载波频偏（CFO）补偿是通过连续测量导频信号的自相关和互相关来实现的。需要注意的是，本原型系统采用了现有的WiFi标准，WiFi的空中信令保持完整。换言之，在不修改无线通信协议的情况下，可以无缝地将RIS技术集成到现有的通信网络中。
+ 
+图3 RIS辅助通信系统的系统图
+表1 硬件模块详细信息
+名称	描述
+中央处理器	英特尔酷睿i7-9700处理器的电脑
+软件无线电	NI USRP-2954R
+FGPA模块	赛灵思Zynq 7100开发板
+喇叭天线	5.8GHz时的增益为17.1 dBi
+
+\subsection{FPGA开发流程}
 
 \subsubsection{综合实现报告与分析}
 
@@ -983,15 +984,18 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 根据题意，我们联合调试了作品的波形显示、挡位切换、触发调节、存储与调用功能、触发电平、参数测量、光标测量等功能。并用信号发生器产生各种波形来进行功能测试。最终结果也较好的反映了示波器的所有正常功能，并有部分指标超出了题目要求。如\autoref{fig:TestFigure}所示即为我们的系统功能调试照片。
 
 \begin{generalfig}[htb]{智能超表面系统整体照片}{fig:TestFigure}
-	\includegraphics[width=12cm]{Figures/TestFigure.jpg}
+	\includegraphics[width=0.8\linewidth]{Figures/TestFigure.pdf}
 \end{generalfig}
 
 \section{总结与展望}\label{sec:conclusion}
 
-毕业设计主要内容到这里就告一段落了，下面总结一下这几个月来的学习研究工作，规划一下未来研究生阶段的展望
+毕业设计主要内容到这里就告一段落了，下面总结一下这几个月来的学习研究工作，对未来研究生阶段的研究工作提出一些自己的思考。
 
 \subsection{论文研究工作总结}
 
+这次毕业设计从2020年年底确定选题开始，到2021年5月已经半年有余，总体来说时间还是比较充裕的。
+在此期间，设计工作基本能按部就班地推进，阅读论文，指定研究思路，着手系统设计，到论文撰写，
+中间也有过几段小插曲，
 
 \subsection{未来工作展望}
 
@@ -1010,7 +1014,7 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 	此生遇见展鹏学长是一件幸事——如耶稣所说，他具有蛇的智慧，兼有鸽子的温柔敦厚。
 	去年仲夏客居藏龙岛，大鹏待我亲切热情，慷慨厚道。
 	他对科学研究好奇深思，深沉而不免于轻浮。
-	“实之华之兹乃兼求，逆风兮，顺风兮，无阻其飞扬！”
+	祝愿鹏哥“实之华之兹乃兼求；逆风兮，顺风兮，无阻其飞扬！”
 
 	% 离家求学三年有余，却始终放不下对故乡的思念，“城中桃李愁风雨，春在溪头荠菜花。”
 
