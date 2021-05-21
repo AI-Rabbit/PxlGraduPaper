@@ -116,12 +116,12 @@
 我们以参考信号接收功率（Reference Signal Receiving Power, RSRP）不低于－110 dBm为基准，26 GHz的总体覆盖（按面积计算）只能达到 3.5 GHz 的62\%\cite{ZTE2020}。
 
 \begin{generaltab}{3.5 GHz和26 GHz下不同材料的穿透损耗（dB）对比\cite{ZTE2020}}{tab:Loss-contrast}
-	\begin{tabularx}{\textwidth}{ccccccc}
+	\begin{tabular}{ccccccc}
 		\toprule
 		        & 混凝土 &  木头  & 雨衰（10 mm/hr） & 人体损耗 & 普通多层玻璃 & IRR玻璃 \\ \midrule
 		3.5 GHz & 19  & 5.27 &      0       &  3   &  2.7   & 24.05 \\
 		26 GHz  & 109 & 7.97 &     1.57     & 9-13 &  7.2   & 30.8  \\ \bottomrule
-	\end{tabularx}
+	\end{tabular}
 \end{generaltab}
 
 \begin{generalfig}[htb]{3.5 GHz和26 GHz覆盖对比\cite{ZTE2020}}{fig:Overlay-comparison}
@@ -540,15 +540,15 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 \subsection{智能超表面选择}\label{subsec:28-GHz-RIS}
 
 本设计选用了\autoref{fig:28-GHz-RIS}所示的工作频点为28 GHz的智能超表面。
-其中\autoref{fig:28-GHz-RIS}(a)为三维仿真图，\autoref{fig:28-GHz-RIS}(b)为正视实物图，\autoref{fig:28-GHz-RIS}(c)为立体实物图。
+其中\autoref{fig:28-GHz-RIS}(a)为三维仿真图，\autoref{fig:28-GHz-RIS}(b)为实物正视图，\autoref{fig:28-GHz-RIS}(c)为实物立体图。
 
 \begin{figure}[htb]
 	\centering
 	\subfloat[三维仿真图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-3D.JPG}}
 	\hfil
-	\subfloat[正视实物图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real.jpg}}
+	\subfloat[实物正视图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real.jpg}}
 	\hfil
-	\subfloat[立体实物图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real2.jpg}}
+	\subfloat[实物立体图]{\includegraphics[width=0.3\linewidth]{Figures/28-GHz-RIS-real2.jpg}}
 	\caption{28 GHz智能超表面}
 	\label{fig:28-GHz-RIS}
 \end{figure}
@@ -852,59 +852,70 @@ AXI（Advanced eXtensible Interface）本是由ARM公司提出的一种总线协
 
 \subsection{系统搭建}
 
-RIS辅助无线通信系统由个人计算机、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。主机、USRP和天线是发射机的主要部件，接收器由相同的主要部件组成。这些收发器分别模拟接入点或基站和用户设备。发射机使用单个无源天线发送视频流。数据通过用户数据报协议（UDP）传输。接收器解码数据流并在主机上播放视频。
-图3出是RIS辅助无线通信系统原型的硬件框图。表1总结了系统中使用的硬件模块的细节。在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换），我们引入了一个反馈链路，它用串行端口连接RIS板和接收器。接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。反馈可用于测量应用反射系数的有效性。下一节将描述我们如何利用这种反馈进行波束赋形设计。
-接下来介绍通信系统的软件框架。系统的信号处理流程如图4所示。首先，我们的发送端上位机程序从UDP套接字加载外部应用程序提供的数据。在有效载荷数据被编码之后，样本被映射到时间-频率资源。然后，采用正交频分复用（OFDM）调制，将频域并行信号转换为时域串行信号。在我们的实验中，带宽和子载波间隔分别为20 MHz和312.5 KHz。信号被上变频到载波频率并通过发射天线发射。
-接收器模块执行与发射器相反的功能。同步和载波频偏（CFO）补偿是通过连续测量导频信号的自相关和互相关来实现的。需要注意的是，本原型系统采用了现有的WiFi标准，WiFi的空中信令保持完整。换言之，在不修改无线通信协议的情况下，可以无缝地将RIS技术集成到现有的通信网络中。
- 
-图3 RIS辅助通信系统的系统图
-表1 硬件模块详细信息
-名称	描述
-中央处理器	英特尔酷睿i7-9700处理器的电脑
-软件无线电	NI USRP-2954R
-FGPA模块	赛灵思Zynq 7100开发板
-喇叭天线	5.8GHz时的增益为17.1 dBi
+RIS辅助无线通信系统由个人计算机（PC）、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。
+PC、USRP和天线是发射机的主要部件，接收器由相同的部件组成。\autoref{tab:hardware}总结了系统中使用的硬件模块的细节。
 
-\subsection{FPGA开发流程}
+\begin{generaltab}{智能超表面系统硬件模块详细信息}{tab:hardware}
+	\begin{tabular}{cc}
+		\toprule
+		名称             & 描述                           \\ \midrule
+		中央处理器       & 英特尔酷睿i7-9700处理器的电脑    \\
+		软件无线电       & NI USRP-2954R                  \\ 
+		上变频模块       & Sub-6 GHz 至mmWare变频器        \\
+		相控阵模块       & 16通道28 GHz毫米波有源相控阵天线 \\
+		FPGA模块        & 赛灵思Zynq-7035开发板            \\
+		实时反馈模块     & nanoUART-wl无线串口             \\
+		喇叭天线        & 27.8 GHz时的增益为21.52 dB       \\ 
+		\bottomrule
+	\end{tabular}
+\end{generaltab}
 
-\subsubsection{综合实现报告与分析}
+\begin{generalfig}[htb]{智能超表面系统整体照片}{fig:TestFigure}
+	\includegraphics[width=0.8\linewidth]{Figures/TestFigure.pdf}
+\end{generalfig}
+
+发射机和接收机分别模拟基站和用户设备。
+发射机使用单个喇叭天线发送视频流。
+数据通过用户数据报协议（UDP）传输。
+接收器解码数据流并在主机上播放视频。
+在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。
+为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换或接收终端处于移动状态），我们引入了一个反馈链路，它用串行端口（UART）连接RIS板和接收器。
+接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。
+反馈可用于测量应用反射系数的有效性。如\autoref{fig:TestFigure}所示即为系统核心部分照片。
+
+\subsection{FPGA调试与分析}
 
 Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路，所以与C语言不同，编程时特别在意硬件资源的消耗、时序分析以及功耗分析，如果实现相同的功能，而硬件消耗过多的话，那么这个设计就基本上是失败的。同理，时序、功耗等参数也是分析设计的重点。
 
-\subsubsubsection{时序报告分析}
-
 在一个时序电路中，一定要满足信号的建立时间和保持时间，否则信号时序出错，数据不能正确的传达。
-
 根据在数字电路基础这门课上学到的知识，可以得到以下的参数关系。
-
-{\bfseries 建立时间}（Ts：set up time）是指在时钟沿到来之前数据从不稳定到稳定所需的时间，如果建立时间不满足要求，那么数据将不能在这个时钟上升沿被稳定地送入触发器；{\bfseries 保持时间}（Th：hold time）是指数据稳定后保持的时间，如果保持时间不满足要求那么数据同样也不能被稳定地送入触发器。
-
-由于建立时间与保持时间的和是稳定的一个时钟周期，如果时钟有延时，同时数据的延时也较小，那么建立时间必然是增大的，保持时间就会随之减小，如果减小到不满足D2的保持时间要求时就不能采集到正确的数据，这时即$ T-(T_{pd}-T_{co}-T_{2min})< T_4 $,就不满足要求了，所以D2的保持时间应该为：$ T-(T_{pd}+T-T_{co}-T_{2min})\ge T_4 $即$ T_{co}+T_{2min} - T_{pd} \ge T_4 $从上式也可以看出如果$ T_{pd}=0 $也就是时钟的延时为0，那么同样要求$ T_{co}+T_{2min}>T_4 $，但是在实际的应用中由于$ T_2 $的延时也就是线路的延时远远大于触发器的保持时间即$ T_4 $，所以不必要关心保持时间。
-
-\autoref{fig:TimingReport}为时序分析报告，可以看到，在100MHz时钟下，建立时间、保持时间以及脉宽都满足时序约束要求。
+{\bfseries 建立时间}（$T_s$：set up time）是指在时钟沿到来之前数据从不稳定到稳定所需的时间，如果建立时间不满足要求，那么数据将不能在这个时钟上升沿被稳定地送入触发器；{\bfseries 保持时间}（$T_h$：hold time）是指数据稳定后保持的时间，如果保持时间不满足要求那么数据同样也不能被稳定地送入触发器。
+\autoref{fig:TimingReport}为时序分析报告，可以看到，在50 MHz的时钟下，建立时间、保持时间以及时钟脉宽都满足时序约束要求。
 
 \begin{generalfig}[htb]{时序分析报告}{fig:TimingReport}
-	\includegraphics[width=\textwidth]{Figures/TimingReport.png}
+	\includegraphics[width=\linewidth]{Figures/TimingReport.png}
 \end{generalfig}
 
-\subsubsubsection{功耗分析}
-
-低功耗是集成电路发展的一个趋势，如果实现一个完好的功能，实现了较低的功耗，那么这样的产品无疑是极有竞争力的。因此需要研究系统功耗，在Xilinx的集成开发工具Vivado中，带有功耗分析的功能。\autoref{fig:PowerAnalysis}所示为系统的功耗分析报告。
+完成时序分析之后，需要对设计做功耗分析。
+低功耗是集成电路发展的一个趋势，如果同样实现一个完好的功能，一个好的设计的功耗会非常低，那么这样的产品无疑是极有竞争力的。
+因此需要研究系统功耗，在Xilinx的集成开发工具Vivado中，带有功耗分析的功能。
+\autoref{fig:PowerAnalysis}所示为系统的功耗分析报告。
 
 \begin{generalfig}[htb]{功耗分析报告}{fig:PowerAnalysis}
-	\includegraphics[width=12cm]{Figures/PowerAnalysis.png}
+	\includegraphics[width=\linewidth]{Figures/PowerAnalysis.png}
 \end{generalfig}
 
-从图中可以看出，本设计的功耗主要用在ARM核上（即PS部分），达到了总功耗的86\%。本设计使用了很多数据传输的IP核，这些IP核都是需要高速时钟驱动的，而逻辑部分没有占用太多的功耗，可以说本系统在功耗上控制得不错。
+从图中可以看出，本设计的功耗主要用在ARM核上（即PS部分），为1.529 W，达到了总功耗的96\%。
+本设计没有使用很多数据传输的IP核，所以逻辑部分没有占用太多的功耗，仅为0.001 W，可以说本系统在功耗上控制得不错。
 
-\subsubsubsection{资源分析}
+资源分析
 从综合到实现，Vivado工具会帮我们做一些布局布线的优化，所以综合阶段的资源占用和实现阶段的资源占用是不一样的，因此选用实现阶段后的资源报告来作为最终的资源分析，如\autoref{fig:ResourceAnalysis}所示。
 
 \begin{generalfig}[htb]{资源分析}{fig:ResourceAnalysis}
 	\includegraphics[width=\textwidth]{Figures/ResourceAnalysis.png}
 \end{generalfig}
 
-\subsubsubsection{电路实现版图}
+电路实现版图
 
 如\autoref{fig:FPGAFinalFig}所示为我们作品的最终FPGA版图。
 
@@ -967,11 +978,7 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 \subsection{系统功能测试}
 在所有软件调试完成之后，我们进行了系统级的调试，主要是测试本作品的功能指标是否满足。
 
-根据题意，我们联合调试了作品的波形显示、挡位切换、触发调节、存储与调用功能、触发电平、参数测量、光标测量等功能。并用信号发生器产生各种波形来进行功能测试。最终结果也较好的反映了示波器的所有正常功能，并有部分指标超出了题目要求。如\autoref{fig:TestFigure}所示即为我们的系统功能调试照片。
-
-\begin{generalfig}[htb]{智能超表面系统整体照片}{fig:TestFigure}
-	\includegraphics[width=0.8\linewidth]{Figures/TestFigure.pdf}
-\end{generalfig}
+根据题意，我们联合调试了作品的波形显示、挡位切换、触发调节、存储与调用功能、触发电平、参数测量、光标测量等功能。并用信号发生器产生各种波形来进行功能测试。最终结果也较好的反映了示波器的所有正常功能，并有部分指标超出了题目要求。
 
 \section{总结与展望}\label{sec:conclusion}
 
