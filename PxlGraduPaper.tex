@@ -18,6 +18,8 @@
 \usepackage{algorithmic}
 \usepackage{amsthm}
 \usepackage{color}
+\usepackage{listings}
+\usepackage{xcolor}
 
 \newtheorem{theorem}{\indent 定理}[section]
 \newtheorem{lemma}{\indent 引理}[section]
@@ -814,58 +816,42 @@ AXI（Advanced eXtensible Interface）本是由ARM公司提出的一种总线协
 	\item {\itshape SER\_OUT}：发送到移位寄存器的串行信号。
 	\item {\itshape BYTE\_IN}：一个8位值，它被送入FPGA的移位寄存器模块中。
 	\item {\itshape CLK}：FPGA逻辑的时钟。
-	\item {\itshape PB}：为模拟目的创建的信号，以指示模块从BYTE\_IN读取8位值。每次按下此按钮被按下FPGA\_2\_SHIFTREG模块都被激活并指示读取BYTE\_IN。此外，驱动模块（模块实例化并使用FPGA\_2\_Shiftreg模块）将Byte\_in值递增一个。
+	\item {\itshape PB}：为仿真创建的信号，以指示模块从{\itshape BYTE\_IN}读取8位值。每次按下此按钮（信号上升沿）FPGA移位寄存器模块都被激活并指示读取{\itshape BYTE\_IN}。此外，testbench模块将{\itshape BYTE\_IN}值递增一个。
 \end{itemize}
 
-引脚约束
+功能验证完成后，下一步进行的是引脚约束。
+使用直接编写约束文件的方式，能大大提高开发效率，因为可以通过模板来快速编写约束文件。
+接着需要做时序约束。使用Vivado进行开发时，一般的时序约束方法有三种。
 
-使用直接编写约束文件的方式，能大大提高开发效率，因为可以通过模板来快速编写约束文件，如\autoref{fig:XDCFile}所示为节选的约束文件。
+{\bfseries 方法1：自动创建基时钟和 PLL 输出时钟}
 
-\begin{generalfig}[htb]{引脚约束文件}{fig:XDCFile}
-	\includegraphics[width=8cm]{Figures/XDCFile.png}
-\end{generalfig}
+这一方法能够自动地约束PLL的输入和输出时钟。在ALTPLL mega function 中指定的所有 PLL 参数都用于约束 PLL 的输入和输出时钟。自动更新了 ALTPLL mega function的修改。当创建 PLL 的输入和输出时钟时，不必跟踪 PLL 参数的更改或指定正确的值。为了自动约束所有输入和输出，要将 derive\_pll\_clocks 命令和 -create\_base\_clocks选项一起使用。
 
-\subsubsubsection{时序约束}
+{\bfseries 方法2：手动创建基时钟和自动创建 PLL 输出时钟}
 
-使用Vivado进行开发时，一般的时序约束方法有三种。
+通过这种方法，可以手动约束 PLL 的输入时钟并且使 TimeQuest analyzer 能够自动约束 PLL 的输出时钟。除此之外，与ALTPLL mega function 中指定的输入时钟频率相反，可以指定一个不同的输入时钟频率。通过使用 ALTPLL mega function 中指定的参数自动创建 PLL 输出时钟。
 
-{\songti \bfseries 方法1：自动创建基时钟和 PLL 输出时钟}
-
-
-这一方法能够自动地约束PLL的输入和输出时钟。ALTPLL mega function 中指定的所有 PLL 参数都用于约束 PLL 的输入和输出时钟。自动更新了 ALTPLL mega function的修改。当创建 PLL 的输入和输出时钟时，不必跟踪 PLL 参数的更改或指定正确的值。为了自动约束所有输入和输出，要将 derive\_pll\_clocks 命令和 -create\_base\_clocks选项一起使用。
-
-{\songti \bfseries 方法2：手动创建基时钟和自动创建 PLL 输出时钟}
-
-
-通过这种方法, 可以手动约束 PLL 的输入时钟并且使 TimeQuest analyzer 能够自动约束 PLL 的输出时钟。除此之外，与ALTPLL mega function 中指定的输入时钟频率相反，可以指定一个不同的输入时钟频率。通过使用 ALTPLL mega function 中指定的参数自动创建 PLL 输出时钟。
-
-{\songti \bfseries 方法3：手动创建基时钟和 PLL 输出时钟}
-
+{\bfseries 方法3：手动创建基时钟和 PLL 输出时钟}
 
 通过这种方法，可以手动约束 PLL 的输入时钟和输出时钟。指定了所有的 PLL 参数并且参数值可以不同于 ALTPLL mega function 中指定的参数值。除此之外，可以尝试各种 PLL 输入和输出频率以及参数。也可以将该方法与 create\_clock 和 create\_generate\_clock 命令的组合一起使用。
 由于软硬件协同设计中，PL部分的时钟由PS内的锁相环提供，因此无需在约束文件中对PL时钟做过多约束。
 
+上述步骤配置完成后，便可以进行综合，如果需要在线调试，还需要在综合结束之后进行配置以形成ILA。\autoref{fig:RTLFigure}是设计综合后的RTL电路图。
 
-\subsubsubsection{综合RTL电路图}
-
-设计完成后，便可以进行综合，如果需要在线调试，还需要在综合结束之后进行配置以形成ILA。\autoref{fig:RTLFigure}是设计综合后的RTL电路图。
-
-\begin{generalfig}[htb]{RTL电路图}{fig:RTLFigure}
-	\includegraphics[width=8cm]{Figures/RTLFigure.png}
+\begin{generalfig}[htb]{智能反射面固件RTL电路图}{fig:RTLFigure}
+	\includegraphics[width=\linewidth]{Figures/RTLFigure.pdf}
 \end{generalfig}
-
-
 
 \subsection{本章小结}
 
 本章主要介绍了智能超表面使能的无线通信系统的实现。从超表面的选择入手，依次介绍了控制电路的设计和驱动、固件的设计。
+本章还详细介绍了系统的开发流程，生成了智能超表面系统的控制固件。
 这一步完成之后，便可以搭建RIS系统了。下一章将搭建智能超表面使能的无线通信系统并进行调试。
 
 \section{系统调试}
 
-
-
 \subsection{系统搭建}
+
 RIS辅助无线通信系统由个人计算机、通用软件无线电外围设备（USRP）、RIS、基于FPGA的主控板和实时RIS-UE反馈模块组成。主机、USRP和天线是发射机的主要部件，接收器由相同的主要部件组成。这些收发器分别模拟接入点或基站和用户设备。发射机使用单个无源天线发送视频流。数据通过用户数据报协议（UDP）传输。接收器解码数据流并在主机上播放视频。
 图3出是RIS辅助无线通信系统原型的硬件框图。表1总结了系统中使用的硬件模块的细节。在原型系统中，RIS的目标是充当智能反射器，将撞击的无线信号作为波束“反射”到接收器。为了支持反射系数的实时调整（例如，使RIS适应时变信道条件或在服务不同UE之间切换），我们引入了一个反馈链路，它用串行端口连接RIS板和接收器。接收机将当前信道的质量（即接收到的信号功率）反馈给FPGA主控板。反馈可用于测量应用反射系数的有效性。下一节将描述我们如何利用这种反馈进行波束赋形设计。
 接下来介绍通信系统的软件框架。系统的信号处理流程如图4所示。首先，我们的发送端上位机程序从UDP套接字加载外部应用程序提供的数据。在有效载荷数据被编码之后，样本被映射到时间-频率资源。然后，采用正交频分复用（OFDM）调制，将频域并行信号转换为时域串行信号。在我们的实验中，带宽和子载波间隔分别为20 MHz和312.5 KHz。信号被上变频到载波频率并通过发射天线发射。
