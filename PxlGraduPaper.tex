@@ -57,30 +57,34 @@
 	近年来，人们研制出了能够对撞击的无线电波进行特定变换的基于电磁的可重构结构，它们的工作频段非常广阔，可以覆盖 Sub­6 GHz、毫米波甚至太赫兹。
 	可重构智能表面（也被称为智能超表面）是一种具有大量无源元件的二维结构，近年来被认为是实现节能智能无线通信的革命性技术之一。
 
-	本设计中，我们开发了一种新型的高增益低成本智能超表面通信系统，它具有256 个元件。
-	该原型由模块化硬件和灵活的软件组成，包括以下内容：参数设置和数据交换主机，用于基带和射频信号处理的通用软件无线电外设(USRP)，以及用于信号传输和接
-收的RIS。
+	本文中，首先用少量篇幅介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及智能超表面对电磁波的调控机理的理论。
+	并对设计的RIS通信系统建模分析，解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
+	之后建立智能超表面系统的传输模型，解释了在何种条件下，系统达到最大传输速率。
+	
+	本设计中，我们开发了一种新型的高增益低成本智能超表面通信系统，其核心部件RIS具有256个元件。
+	该原型由模块化硬件和灵活的软件组成，包括以下内容：
+	数据交换主机、用于基带和射频信号处理的通用软件无线电外设，以及用于信号传输和反射的RIS，
+	系统还包括一些附加组件如喇叭天线，变频器，相控阵天线。
+	文章着重介绍了控制电路的设计和驱动、固件的设计。
+	最后的测试结果表明系统能实现波束调控，达到了设计目的。
 
-本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。
-文中首先在\autoref{sec:theory}介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及智能超表面对电磁波的调控机理的理论。
-
-\autoref{sec:modeling}开始对RIS通信系统建模分析，解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
-并建立智能超表面系统的传输模型，解释了在何种条件下，系统达到最大传输速率。
-
-\autoref{sec:design}设计了一个由可编程超表面及其控制电路构成的智能反射面系统。
-从超表面的选择入手，依次介绍了控制电路的设计和驱动、固件的设计。
-这章还详细介绍了系统的开发流程，生成了智能超表面系统的控制固件。
-
-\autoref{sec:test}简单地叙述了系统调试方面的内容。
-描述了系统组成、系统搭建的过程，重点介绍了FPGA的调试与分析。最后的测试结果表明系统能实现波束调控，达到了设计目的。
-
-最后，在\autoref{sec:conclusion}中总结了本文的研究内容，并对未来的研究工作作了初步分析。
 \end{cnabstract}
 %填写英文摘要内容和关键字
 \begin{enabstract}{Reconfigurable intelligent surface; intelligent reflecting surface; wireless repeating; massive multiple-input multiple-output; prototype; field programmable gate array}
 	%Please Use English Semicolon and a Space "; " to Separate Keys! 
 
-	Recently,
+	As the latest generation of mobile communication technology, the fifth-generation mobile communication technology (5G) will be injected into the Internet of Things, Social Entertainment, Smart Transportation, Industrial Internet, and other technologies in its large bandwidth, low delay, and large connectivity.
+	This technology will help China's digital economic development.
+	However, the application of 5G and millimeter-wave at this stage also has some painful problems with high cost, high energy consumption, and poor coverage.
+	In recent years, people have developed electromagnetic-based reconfigurable structures that can be used for a radio wave impacted, and their operating frequency bands are very broad, including Sub-6 GHz, millimeters, or even terahertz.
+	Reconfigurable intelligent surfaces (RISs) are two-dimensional structures having a large number of passive components, which is considered to be one of the revolutionary techniques to achieve energy-saving intelligent wireless communication.
+	
+	In this article, the basic theory of the intelligent reflecting surface is first introduced.
+	Then, we analyze the model of the RIS communication system, explained how to scatter incident waves on the passive metal surface.
+	Furthermore, we summarize a strict path loss model.
+	We build the transmission model of the RIS system, explain the system reaches the maximum transmission rate in what condition.
+
+	In this design, we have developed a new type of high gain low-cost RIS communication system with 256 components. This prototype consists of modular hardware and flexible software, including the following: data exchange hosts, universal software radio peripherals for baseband and RF signal processing, and the RIS for signal transmission and reflection, the system also includes some additional components such as a horn antenna, a frequency converter, an active array antenna. The article focuses on the design of the control circuit and the firmware. The final test results indicate that the system can achieve beam regulation and achieve design purposes.
 
 \end{enabstract}
 
@@ -988,31 +992,25 @@ Verilog HDL是一种硬件描述语言，其最终的目的是生成硬件电路
 \subsection{工作总结}
 
 本文的主要研究内容是如何利用可编程电磁超表面增强5G信号覆盖。
-文中首先在\autoref{sec:theory}介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及智能超表面对电磁波的调控机理的理论。
-
-\autoref{sec:modeling}开始对RIS通信系统建模分析，解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。
-并建立智能超表面系统的传输模型，解释了在何种条件
-下，系统达到最大传输速率。
-
-\autoref{sec:design}设计了一个由可编程超表面及其控制电路构成的智能反射面系统。
+文中首先介绍了电磁超表面的相关基础理论，包括广义反射定律和折射定律以及智能超表面对电磁波的调控机理的理论。
+接着对RIS通信系统建模分析，解释了无源金属表面如何散射入射波，然后推导出智能超表面必须如何设计来模拟这种表面，同时控制散射波的方向性，总结了一个严格的路径损耗模型。并建立智能超表面系统的传输模型，解释了在何种条件下，系统达到最大传输速率。
+随后，基于上述的理论分析，设计了一个由可编程超表面及其控制电路构成的智能反射面系统。
 从超表面的选择入手，依次介绍了控制电路的设计和驱动、固件的设计。
-这章还详细介绍了系统的开发流程，生成了智能超表面系统的控制固件。
-
-\autoref{sec:test}简单地叙述了系统调试方面的内容。
-描述了系统组成、系统搭建的过程，重点介绍了FPGA的调试与分析。最后的测试结果表明系统能实现波束调控，达到了设计目的。
-
-最后，在\autoref{sec:conclusion}中总结了本文的研究内容，并对未来的研究工作作了初步分析。
+还详细介绍了系统的开发流程，生成了智能超表面系统的控制固件。
+最后简单地叙述了系统调试方面的内容。
+描述了系统组成、系统搭建的过程，重点介绍了FPGA的调试与分析。
 
 \subsection{未来工作展望}
 
-
 目前，学术界和工业界对于智能超表面的研究工作正在如火如荼地进行着，相关的研究报道可谓是日新月异。
-时下，第二版的毫米波系统刚刚建立，通信链路刚刚调通，智能超表面在毫米波通信中的应用更加值得我们去探索，本文的主要内容也是围绕毫米波系统展开的
-
+智能超表面在毫米波通信中的应用更加值得我们去探索，本文的主要内容也是围绕毫米波系统展开的。
+时下，我们第二版的毫米波系统刚刚建立，通信链路刚刚调通。
+接下来一段时间首要的是将控制算法部署在智能超表面控制系统上，并进行端到端的测试实验。
+未来，我们会对毫米波RIS通信系统做一系列的性能测试，研究并完善现有的理论模型。
 
 \begin{thankpage}
 	
-	“未觉池塘春草梦，阶前梧叶已秋声。”宋朝大儒朱子以敏锐细腻的笔触感叹岁月易逝。此情此景我在华工也是深有感触。
+	“未觉池塘春草梦，阶前梧叶已秋声。”宋朝大儒朱子以敏锐细腻的笔触感叹岁月易逝，此情此景我在华工也是深有感触。
 
 	\LaTeX
 	
