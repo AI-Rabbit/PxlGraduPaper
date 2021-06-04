@@ -108,7 +108,7 @@
 %paragraph dot sep=4.5 目录第五级的点间距，默认是4.5
 %subparagraph dot sep=4.6 目录第六级的点间距，默认是4.5
 %请注意在合适的位置放置\pagenumbering{numstyle}使用新的页码
-\tableofcontents[indent=hustnoindent, level=3, pagenum=true]
+\tableofcontents
 
 \clearpage%结束上一页
 \pagenumbering{arabic} %正文页码为阿拉伯数字
@@ -557,7 +557,7 @@ $\theta_{i} \in\left[0, \frac{\pi}{2}\right]$表示为入射角，即电磁波�
 \end{lemma}
 
 \begin{proof}
-	对于任意给定的$\boldsymbol{\Theta}$，\autoref{eq:R-RIS1}中的速率表达式是由加性白高斯噪声信道的容量获得的。注意$ \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}} = \alpha \sum_{l=1}^{L} e^{j\theta_l} \left[\mathbf{h}_{\mathrm{sr}}\right]_{l}\left[\mathbf{h}_{\mathrm{rd}}\right]_{l} $。当单元的相移$\theta_{l}=\arg \left(h_{\mathrm{sd}}\right)-\arg \left(\left[\mathbf{h}_{\mathrm{sr}}\right]_{l}\left[\mathbf{h}_{\mathrm{rd}}\right]_{l}\right)$时，系统达到最大传输速率。
+	对于任意给定的$\boldsymbol{\Theta}$，\autoref{eq:R-RIS1}中的速率表达式是由加性白高斯噪声信道的容量获得的。注意$ \mathbf{h}_{\mathrm{sr}}^{\mathrm{T}} \boldsymbol{\Theta} \mathbf{h}_{\mathrm{rd}} = \alpha \sum_{l=1}^{L} e^{j\theta_l} \left[\mathbf{h}_{\mathrm{sr}}\right]_{l}\left[\mathbf{h}_{\mathrm{rd}}\right]_{l} $。当单元的相移$\theta_{l}=\arg \left(h_{\mathrm{sd}}\right)-\arg \left(\left[\mathbf{h}_{\mathrm{sr}}\right]_{n}\left[\mathbf{l}_{\mathrm{rd}}\right]_{l}\right)$时，系统达到最大传输速率。
 \end{proof}
 
 \subsection{本章小结}
